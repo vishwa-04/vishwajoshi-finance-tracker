@@ -1,10 +1,11 @@
-// import {Link} from 'react-router-dom';
 import './App.css';
+import FinanceTracker from './pages/user';
+
 
 function App() {
   return (
     <div className="App">
-   <h1>Finance Tracker</h1>
+<FinanceTracker/>
     </div>
   );
 }
