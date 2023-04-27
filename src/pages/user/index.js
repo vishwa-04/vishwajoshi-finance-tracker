@@ -6,12 +6,12 @@ import "./css/style.css";
 
 function FinanceTracker() {
   const initialValues = {
-    transDate: "",
+    transDate: 0,
     month: "",
     transType: "",
     frmAcc: "",
     toAcc: "",
-    amount: "",
+    amount: 0,
     filename: "",
     notes: "",
   };
@@ -26,17 +26,7 @@ function FinanceTracker() {
     setFormErrors(validate(formValues));
     setIsSubmit(true);
 
-    if (Object.keys(formError).length === 0 && isSubmit === true) {
-      if (localStorage.getItem("items") !== null) {
-        let data = JSON.parse(localStorage.getItem("items"));
-        console.log(data, "data");
-        data.push(formValues);
-        localStorage.setItem("items", JSON.stringify(data));
-      } else {
-        localStorage.setItem("items", JSON.stringify([formValues]));
-      }
-      navigate('/showTable')
-    }
+    
   }
 
   function handleChange(e) {
@@ -55,7 +45,7 @@ function FinanceTracker() {
         })
       }
     }
-    console.log(e.target.files,"file");
+    
     setFormValues({ ...formValues, [name]: value });
   }
 
@@ -109,7 +99,17 @@ function FinanceTracker() {
     } else if (values.notes.length > 250) {
       errors.notes = "Notes too long !";
     }
-
+    if (Object.keys(errors).length === 0) {
+      if (localStorage.getItem("items") !== null) {
+        let data = JSON.parse(localStorage.getItem("items"));
+        console.log(data, "data");
+        data.push(formValues);
+        localStorage.setItem("items", JSON.stringify(data));
+      } else {
+        localStorage.setItem("items", JSON.stringify([formValues]));
+      }
+      navigate('/showTable')
+    }
     return errors;
   }
 
@@ -122,7 +122,7 @@ function FinanceTracker() {
     <div className="App">
       <div className="container">
         <h1>Finance Tracker</h1>
-        <form onSubmit={submitHandle}>
+        <form onSubmit={submitHandle} className="form-control">
           <div className="container">
             <table>
               <tbody>
@@ -276,14 +276,14 @@ function FinanceTracker() {
                 </tr>
                 <tr>
                   <td>
-                    <input type="submit" value="Submit" />
+                    <input type="submit" value="Submit" className='btn btn-primary'/>
                   </td>
                 </tr>
               </tbody>
             </table>
-            <Link to={'/showTable'}>View Transaction</Link>
           </div>
         </form>
+            <Link to={'/showTable'} className="btn btn-secondary">View Transaction</Link>
       </div>
     </div>
   );
