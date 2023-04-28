@@ -1,5 +1,5 @@
 import {Link} from 'react-router-dom';
-import React from "react";
+import React, { useEffect } from "react";
 import {useNavigate} from "react-router-dom"
 import { useState } from "react";
 import "./css/style.css";
@@ -25,15 +25,41 @@ function FinanceTracker() {
     e.preventDefault();
     setFormErrors(validate(formValues));
     setIsSubmit(true);
-
+    console.table(formError,"tableeee");
     
   }
+  useEffect(()=>{
+    if (Object.keys(formError).length === 0 && isSubmit===true) {
+      if (localStorage.getItem("items") !== null) {
+        let data = JSON.parse(localStorage.getItem("items"));
+        console.log(data, "data");
+        data.push(formValues);
+        localStorage.setItem("items", JSON.stringify(data));
+      } else {
+        localStorage.setItem("items", JSON.stringify([formValues]));
+      }
+      navigate('/showTable')
+    }
+    //eslint-disable-next-line
+  },[isSubmit])
 
   function handleChange(e) {
+    
     const { name, value } = e.target;
     if(e.target.type==="file"){
+      if(e.target.files[0]){
+
+      console.log(e.target.files[0].name,":::::::::::::::");
       if(e.target.files[0].size>"200000"){
+        // e.target.files[0].name = ""
         alert("too big")
+        setIsSubmit(false);
+        setFormValues({ ...formValues, filename:""});
+        // setFormErrors(validate(formValues));
+
+
+        
+
       }else{
         let reader = new FileReader();
         reader.readAsDataURL(e.target.files[0])
@@ -43,7 +69,7 @@ function FinanceTracker() {
           console.log(val);
           setFormValues({ ...formValues, filename:val});
         })
-      }
+      }}
     }
     
     setFormValues({ ...formValues, [name]: value });
@@ -88,28 +114,20 @@ function FinanceTracker() {
     //   errors.filename = "only png,jpg,jpeg file supported !";
   
     // }
-    if (values.filename === "") {
+    if (values.filename === "" || values.filename === null) {
       errors.filename = "File is a required field !";
     }
 
-    console.log(values.file);
+   
+
+    console.log(values.filename.size,"filesize");
 
     if (values.notes === "") {
       errors.notes = "Notes is a required field !";
     } else if (values.notes.length > 250) {
       errors.notes = "Notes too long !";
     }
-    if (Object.keys(errors).length === 0) {
-      if (localStorage.getItem("items") !== null) {
-        let data = JSON.parse(localStorage.getItem("items"));
-        console.log(data, "data");
-        data.push(formValues);
-        localStorage.setItem("items", JSON.stringify(data));
-      } else {
-        localStorage.setItem("items", JSON.stringify([formValues]));
-      }
-      navigate('/showTable')
-    }
+  console.log(Object.keys(errors).length,"::::errors ");
     return errors;
   }
 
