@@ -29,6 +29,11 @@ function FinanceTracker() {
     
   }
   useEffect(()=>{
+  let previousId = JSON.parse(localStorage.getItem("items"))
+  const id = (localStorage.getItem("items"))?x.length+1:1;
+    setFormValues({...formValues,id:id})
+  },[])
+  useEffect(()=>{
     if (Object.keys(formError).length === 0 && isSubmit===true) {
       if (localStorage.getItem("items") !== null) {
         let data = JSON.parse(localStorage.getItem("items"));
