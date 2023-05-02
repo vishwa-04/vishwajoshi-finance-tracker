@@ -1,22 +1,35 @@
-import {Link} from 'react-router-dom';
+import { Link, useParams } from "react-router-dom";
 import React, { useEffect } from "react";
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "./css/style.css";
 
-function FinanceTracker({localFormValue,isUpdate,index}) {
-  const initialValues = {
-    transDate: "",
-    month: "",
-    transType: "",
-    frmAcc: "",
-    toAcc: "",
-    amount: "",
-    filename: "",
-    notes: "",
-  };
+function FinanceTracker({ updateFormValue, isUpdate, index }) {
+  // console.log(updateFormValue,"updateformValue");
+  let initialValues;
+  updateFormValue
+    ? (initialValues = {
+        transDate: updateFormValue.transDate,
+        month: updateFormValue.month,
+        transType: updateFormValue.transType,
+        frmAcc: updateFormValue.frmAcc,
+        toAcc: updateFormValue.toAcc,
+        amount: updateFormValue.amount,
+        filename: updateFormValue.filename,
+        notes: updateFormValue.notes,
+      })
+    : (initialValues = {
+        transDate: "",
+        month: "",
+        transType: "",
+        frmAcc: "",
+        toAcc: "",
+        amount: "",
+        filename: "",
+        notes: "",
+      });
   const navigate = useNavigate();
-  const [removeImage, setRemoveImage] = useState(false);
+
   const [formValues, setFormValues] = useState(initialValues);
   const [formError, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
@@ -26,61 +39,75 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
     e.preventDefault();
     setFormErrors(validate(formValues));
     setIsSubmit(true);
-    console.table(formError,"tableeee");
-    
   }
-  useEffect(()=>{
-  let previousId = JSON.parse(localStorage.getItem("items"))
-  const id = (localStorage.getItem("items"))?previousId.length+1:1;
-    setFormValues({...formValues,id:id})
-  },[])
-  useEffect(()=>{
-    if (Object.keys(formError).length === 0 && isSubmit===true) {
+  const { id } = useParams();
+  useEffect(() => {
+    if (!isUpdate) {
+      let previousId = JSON.parse(localStorage.getItem("items"));
+      const id = localStorage.getItem("items") ? previousId.length + 1 : 1;
+      setFormValues({ ...formValues, id: id });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (Object.keys(formError).length === 0 && isSubmit) {
       if (localStorage.getItem("items") !== null) {
-        let data = JSON.parse(localStorage.getItem("items"));
-        console.log(data, "data");
-        data.push(formValues);
+        const data = JSON.parse(localStorage.getItem("items"));
+
+        if (id) {
+          for (const e in data) {
+            if (parseInt(data[e].id) === parseInt(id)) {
+              console.log(data[e].id, id, "e:id");
+              formValues['id'] = id;
+              data[e] = formValues;
+              console.log(data[e],formValues,"data[e]   :::::::: formvalues");
+            }
+          }
+        } else {
+          let previousId = data[data.length - 1].id;
+          formValues['id']= previousId+1
+          data.push(formValues);
+        }
+
         localStorage.setItem("items", JSON.stringify(data));
       } else {
+        formValues['id']= 1;
         localStorage.setItem("items", JSON.stringify([formValues]));
       }
-      navigate('/showTable')
+      navigate("/showTable");
     }
     //eslint-disable-next-line
-  },[isSubmit])
+  }, [formError]);
   const handelRemoveImage = () => {
-    setRemoveImage(true);
-    setFormValues({...formValues, filename:""});
+    setFormValues({ ...formValues, filename: "" });
   };
+
+
+
+
+
   function handleChange(e) {
-    
+
     const { name, value } = e.target;
-    if(e.target.type==="file"){
-      if(e.target.files[0]){
-
-      console.log(e.target.files[0].name,":::::::::::::::");
-      if(e.target.files[0].size>"200000"){
-        // e.target.files[0].name = ""
-        alert("too big")
-        setIsSubmit(false);
-        setFormValues({ ...formValues, filename:""});
-        // setFormErrors(validate(formValues));
-
-
-        
-
-      }else{
-        let reader = new FileReader();
-        reader.readAsDataURL(e.target.files[0])
-        console.log(reader);
-        reader.addEventListener('load',function(){
-          let val = this.result
-          console.log(val);
-          setFormValues({ ...formValues, filename:val});
-        })
-      }}
+    if (e.target.type === "file") {
+      if (e.target.files[0]) {
+        console.log(e.target.files[0].name, ":::::::::::::::");
+        if (e.target.files[0].size > 200000) {
+          // e.target.files[0].name = ""
+          alert("too big");
+        } else {
+          let reader = new FileReader();
+          reader.readAsDataURL(e.target.files[0]);
+          console.log(reader);
+          reader.addEventListener("load", function () {
+            let val = this.result;
+            console.log(val);
+            setFormValues({ ...formValues, filename: val });
+          });
+        }
+      }
     }
-    
+
     setFormValues({ ...formValues, [name]: value });
   }
 
@@ -117,26 +144,19 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
       errors.amount = "Amount cannot be less than 0 !";
     }
 
-
-    // let newfileExtension = values.filename.slice(values.filename.length - 4);
-    // if (!fileExtension.includes(newfileExtension)) {
-    //   errors.filename = "only png,jpg,jpeg file supported !";
-  
-    // }
-    if (values.filename === "" || values.filename === null) {
+    console.log(values.filename, "filenameeee");
+    if (!values.filename) {
       errors.filename = "File is a required field !";
     }
 
-   
-
-    console.log(values.filename.size,"filesize");
+    console.log(values.filename.size, "filesize");
 
     if (values.notes === "") {
       errors.notes = "Notes is a required field !";
     } else if (values.notes.length > 250) {
       errors.notes = "Notes too long !";
     }
-  console.log(Object.keys(errors).length,"::::errors ");
+    console.log(Object.keys(errors).length, "::::errors ");
     return errors;
   }
 
@@ -176,7 +196,12 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
                     <label>Month Year</label>
                   </td>
                   <td>
-                    <select id="getmonth" name="month" onChange={handleChange} value={formValues.month}>
+                    <select
+                      id="getmonth"
+                      name="month"
+                      onChange={handleChange}
+                      value={formValues.month}
+                    >
                       <option value="0">--Select Month--</option>
                       <option value={`Janaury ${year}`}>Janaury {year}</option>
                       <option value={`February ${year}`}>
@@ -226,7 +251,12 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
                     <label>From Account</label>
                   </td>
                   <td>
-                    <select id="frmAcc" name="frmAcc" onChange={handleChange} value={formValues.frmAcc}>
+                    <select
+                      id="frmAcc"
+                      name="frmAcc"
+                      onChange={handleChange}
+                      value={formValues.frmAcc}
+                    >
                       <option value="">--Select From Account--</option>
                       <option value="Personal Account">Personal Account</option>
                       <option value="Real Living">Real Living</option>
@@ -243,7 +273,12 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
                     <label>To Account</label>
                   </td>
                   <td>
-                    <select id="toAcc" name="toAcc" onChange={handleChange} value={formValues.toAcc}>
+                    <select
+                      id="toAcc"
+                      name="toAcc"
+                      onChange={handleChange}
+                      value={formValues.toAcc}
+                    >
                       <option value="">--Select To Account--</option>
                       <option value="Personal Account">Personal Account</option>
                       <option value="Real Living">Real Living</option>
@@ -276,16 +311,31 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
                     <label>Receipt</label>
                   </td>
                   <td>
-                    <input
-                      type="file"
-                      id="myFile"
-                      name="filename"
-                      onChange={handleChange}
-                    ></input>
-                    <div className="errorStyle">{formError.filename}</div>
+                    {
+                    formValues.filename ? 
+                      <><img
+                          style={{ width: "200px" }}
+                          alt="img"
+                          src={formValues.filename}
+                        />
+                        <input
+                          type="button"
+                          value="remove"
+                          onClick={() => handelRemoveImage()}
+                        />
+                      </>
+                     : 
+                      <input
+                        type="file"
+                        id="myFile"
+                        onChange={handleChange}
+                      />
+                      
+                    }
                   </td>
+                  <div className="errorStyle">{formError.filename}</div>
                   <td>
-                  {removeImage ? (
+                    {/* {removeImage ? (
                   <>
                     <input
                       type="file"
@@ -293,6 +343,7 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
                       value={formValues.filename}
                       onChange={(e) => {
                         handleChange(e.target.files);
+
                       }}
                     />
                     <span>{formError.filename}</span>
@@ -311,11 +362,13 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
                       onClick={() => handelRemoveImage()}
                     />
                   </>
-                )}
+                )} */}
                   </td>
-                  <tr><td>
-                    {/* <img src={formValues.filename} alt="alt"></img> */}
-                    </td></tr>
+                  <tr>
+                    <td>
+                      {/* <img src={formValues.filename} alt="alt"></img> */}
+                    </td>
+                  </tr>
                 </tr>
                 <tr>
                   <td>
@@ -326,6 +379,7 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
                       rows="5"
                       cols="20"
                       name="notes"
+                      value={formValues.notes}
                       onChange={handleChange}
                     ></textarea>
                     <div className="errorStyle">{formError.notes}</div>
@@ -333,14 +387,20 @@ function FinanceTracker({localFormValue,isUpdate,index}) {
                 </tr>
                 <tr>
                   <td>
-                    <input type="submit" value="Submit" className='btn btn-primary'/>
+                    <input
+                      type="submit"
+                      value="Submit"
+                      className="btn btn-primary"
+                    />
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
         </form>
-            <Link to={'/showTable'} className="btn btn-secondary">View Transaction</Link>
+        <Link to={"/showTable"} className="btn btn-secondary">
+          View Transaction
+        </Link>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import "../user/showTable.css";
+
 const ViewTransaction = () => {
   const { id } = useParams();
   console.log(id,"iddd");

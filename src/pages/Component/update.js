@@ -6,14 +6,14 @@ import FinanceTracker from '../user';
 export default function UpdateTransaction() {
     const { id } = useParams();
     const data = JSON.parse(localStorage.getItem("items"));
-    console.log(data);
+    // console.log(data);
     const index = data.findIndex((ele) => ele.id == id);
-    console.log(index)
-    console.table(data[index]);
+    // console.log(index,"this is index");
+    // console.log(data[index],"this is dataaaaaa");
   return (
     <div>
       {
-        index<0 ?(<h1>no data found</h1>):(<FinanceTracker localFormValue={data[index]} index={index} isUpdate={true}/>)
+        index<0 ?(<h1>no data found</h1>):(<FinanceTracker updateFormValue={data[index]} index={index} isUpdate={true}/>)
       }
       
     </div>

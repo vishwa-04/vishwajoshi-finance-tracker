@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import './index.css';
 import App from './App'
+import Login from './pages/Component/login';
 import ShowTable from './pages/Component/showTable';
 import reportWebVitals from './reportWebVitals';
 import ViewTransaction from './pages/Component/transaction';
@@ -28,6 +29,10 @@ const router = createBrowserRouter([
   {
     path: `/update/:id`,
     element:<UpdateTransaction/>
+  },
+  {
+    path: `/login`,
+    element:<Login/>
   },
   
 ]);

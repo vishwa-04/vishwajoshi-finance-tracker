@@ -113,15 +113,30 @@ const ShowTable = () => {
     let value = e.target.value;
     array.forEach((item) => {
       let result = item[value];
-      console.log(result, ":::::");
+   
       storeResult[result] = storeResult[result] ?? [];
       storeResult[result].push(item);
-      console.log(typeof data, "hellllllllooooooooooo");
+      
     });
     setGroupData(storeResult);
   }
-  console.log(groupData, "this is group data");
+const [filter,setFilter] = useState([])
+// const[value,setValue]=useState(0)
+function filterBySearch(e){
+  let querySearch = e.target.value
+  let filterData = [...getData];
+ if(querySearch !== ""){
+  const filterTable = filterData.filter(items => Object.keys(items).some(data=> String(items[data]).toLowerCase().includes(querySearch.toLowerCase())));
+  setFilter(...filterTable)
+  console.log(filter,"filterrr length");
+}
+else{
+  setFilter(filter)
+ 
+}
 
+}
+console.log(filter,"filter");
   return (
     <>
       <tr>
@@ -130,18 +145,41 @@ const ShowTable = () => {
         </td>
         <td>
           <select id="transactionType" name="transType" onChange={handleChange}>
-            <option value="">--Group By--</option>
-            <option value="">None</option>
+            <option value="groupby">--Group By--</option>
+            <option value="none">None</option>
             <option value="month">Month Year</option>
             <option value="transType">Transaction Type</option>
             <option value="frmAcc">From Account</option>
             <option value="toAcc">To Account</option>
           </select>
+     
         </td>
+        
         {/* eslint-disable-next-line */}
       </tr>
+      <tr>
+        <td>
+        <div className="search-header">
+      <label>Search:</label>
+      <input id="search-box" onChange={filterBySearch} />
+    </div>
+        </td>
+      </tr>
+    
+     
+             {filter.length !== 0 &&
+                
+                <Transaction requestSort={requestSort} getData={[filter]} months = {months}></Transaction>
+             }
+             {filter.length === 0 &&
 
-      <Transaction requestSort={requestSort} getData={getData} months = {months}></Transaction>
+                <Transaction requestSort={requestSort} getData={getData} months = {months}></Transaction>
+             }
+
+             
+                
+         
+
 
     
 
@@ -153,95 +191,10 @@ const ShowTable = () => {
                 <h2>{data}</h2>
              
                 <>
-                {console.log(data)}
+                {console.log(data,"data")}
                 <Transaction requestSort={requestSort} getData={groupData[data]} months = {months}></Transaction>
                 </>
              
-                
-                {/* <table className="table table-secondary">
-                  <thead>
-                    <tr>
-                      <th
-                        onClick={() => requestSort("transDate")}
-                        style={{ cursor: "pointer" }}
-                      >
-                        {" "}
-                        Transaction Date
-                      </th>
-                      <th
-                        onClick={() => requestSort("month", "month")}
-                        months={months}
-                        style={{ cursor: "pointer" }}
-                      >
-                        Month
-                      </th>
-                      <th
-                        onClick={() => requestSort("transType")}
-                        style={{ cursor: "pointer" }}
-                      >
-                        Transaction Type
-                      </th>
-                      <th
-                        onClick={() => requestSort("frmAcc")}
-                        style={{ cursor: "pointer" }}
-                      >
-                        From Account
-                      </th>
-                      <th
-                        onClick={() => requestSort("toAcc")}
-                        style={{ cursor: "pointer" }}
-                      >
-                        To Account
-                      </th>
-                      <th
-                        onClick={() => requestSort("amount", "number")}
-                        style={{ cursor: "pointer" }}
-                      >
-                        Amount
-                      </th>
-                      <th>Filename</th>
-                      <th
-                        onClick={() => requestSort("notes")}
-                        style={{ cursor: "pointer" }}
-                      >
-                        Notes
-                      </th>
-                      <th>View</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {groupData[data].map((data, index) => (
-                      <tr key={index}>
-                        <td>{data.transDate}</td>
-                        <td>{data.month}</td>
-                        <td>{data.transType}</td>
-                        <td>{data.frmAcc}</td>
-                        <td>{data.toAcc}</td>
-                        <td>
-                          {Intl.NumberFormat("en-IN", {
-                            style: "currency",
-                            currency: "INR",
-                            minimumFractionDigits: 0,
-                          }).format(data.amount)}
-                        </td>
-                        <td>
-                          <img
-                            src={data.filename}
-                            alt="img"
-                            height="50px"
-                            width="50px"
-                          ></img>
-                        </td>
-                        <td>{data.notes}</td>
-                        <td>
-                          {" "}
-                          <Link to={`/transaction/${index}`}>View</Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table> */}
               </>
             )
         )}
