@@ -2,10 +2,14 @@ import { useParams } from "react-router-dom";
 import "../user/showTable.css";
 const ViewTransaction = () => {
   const { id } = useParams();
+  console.log(id,"iddd");
   const getData = JSON.parse(localStorage.getItem("items"));
+  const [transaction] = getData.filter(ele=>ele.id==id);
+  // console.log(data,"data");
   return (
     <>
-      {[getData[id]].map((data, index) => {
+      {[transaction].map((data, index) => {
+        console.log(transaction[data],"data");
         return (
             <div className="container">
           <div className="card" style={{ width: "18rem" }}>

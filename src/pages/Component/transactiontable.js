@@ -81,6 +81,7 @@ export const Transaction  = (props) =>{
               Notes
             </th>
             <th>View</th>
+            <th>Update</th>
           </tr>
         </thead>
         <tbody>
@@ -110,7 +111,11 @@ export const Transaction  = (props) =>{
                 <td>{data.notes}</td>
                 <td>
                   {" "}
-                  <Link  to={`/transaction/${index}`}>View</Link>
+                  <Link  to={`/transaction/${data.id}`}>View</Link>
+                </td>
+                <td>
+                  {" "}
+                  <Link  to={`/update/${data.id}`}>Update</Link>
                 </td>
               </tr>
             );

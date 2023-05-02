@@ -4,18 +4,19 @@ import {useNavigate} from "react-router-dom"
 import { useState } from "react";
 import "./css/style.css";
 
-function FinanceTracker() {
+function FinanceTracker({localFormValue,isUpdate,index}) {
   const initialValues = {
-    transDate: 0,
+    transDate: "",
     month: "",
     transType: "",
     frmAcc: "",
     toAcc: "",
-    amount: 0,
+    amount: "",
     filename: "",
     notes: "",
   };
   const navigate = useNavigate();
+  const [removeImage, setRemoveImage] = useState(false);
   const [formValues, setFormValues] = useState(initialValues);
   const [formError, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
@@ -30,7 +31,7 @@ function FinanceTracker() {
   }
   useEffect(()=>{
   let previousId = JSON.parse(localStorage.getItem("items"))
-  const id = (localStorage.getItem("items"))?x.length+1:1;
+  const id = (localStorage.getItem("items"))?previousId.length+1:1;
     setFormValues({...formValues,id:id})
   },[])
   useEffect(()=>{
@@ -47,7 +48,10 @@ function FinanceTracker() {
     }
     //eslint-disable-next-line
   },[isSubmit])
-
+  const handelRemoveImage = () => {
+    setRemoveImage(true);
+    setFormValues({...formValues, filename:""});
+  };
   function handleChange(e) {
     
     const { name, value } = e.target;
@@ -157,7 +161,7 @@ function FinanceTracker() {
                     <input
                       type="date"
                       name="transDate"
-                      // value={formValues.transDate}
+                      value={formValues.transDate}
                       onChange={handleChange}
                     ></input>
                     <tr>
@@ -172,7 +176,7 @@ function FinanceTracker() {
                     <label>Month Year</label>
                   </td>
                   <td>
-                    <select id="getmonth" name="month" onChange={handleChange}>
+                    <select id="getmonth" name="month" onChange={handleChange} value={formValues.month}>
                       <option value="0">--Select Month--</option>
                       <option value={`Janaury ${year}`}>Janaury {year}</option>
                       <option value={`February ${year}`}>
@@ -207,6 +211,7 @@ function FinanceTracker() {
                       id="transactionType"
                       name="transType"
                       onChange={handleChange}
+                      value={formValues.transType}
                     >
                       <option value="">--Select Transaction-</option>
                       <option value="Home">Home</option>
@@ -221,7 +226,7 @@ function FinanceTracker() {
                     <label>From Account</label>
                   </td>
                   <td>
-                    <select id="frmAcc" name="frmAcc" onChange={handleChange}>
+                    <select id="frmAcc" name="frmAcc" onChange={handleChange} value={formValues.frmAcc}>
                       <option value="">--Select From Account--</option>
                       <option value="Personal Account">Personal Account</option>
                       <option value="Real Living">Real Living</option>
@@ -238,7 +243,7 @@ function FinanceTracker() {
                     <label>To Account</label>
                   </td>
                   <td>
-                    <select id="toAcc" name="toAcc" onChange={handleChange}>
+                    <select id="toAcc" name="toAcc" onChange={handleChange} value={formValues.toAcc}>
                       <option value="">--Select To Account--</option>
                       <option value="Personal Account">Personal Account</option>
                       <option value="Real Living">Real Living</option>
@@ -278,6 +283,35 @@ function FinanceTracker() {
                       onChange={handleChange}
                     ></input>
                     <div className="errorStyle">{formError.filename}</div>
+                  </td>
+                  <td>
+                  {removeImage ? (
+                  <>
+                    <input
+                      type="file"
+                      name="Receipt"
+                      value={formValues.filename}
+                      onChange={(e) => {
+                        handleChange(e.target.files);
+                      }}
+                    />
+                    <span>{formError.filename}</span>
+                  </>
+                ) : (
+                  <>
+                    <img
+                      style={{ width: "200px" }}
+                      src={formValues.filename}
+                      alt="..."
+                    />
+
+                    <input
+                      type="button"
+                      value="remove"
+                      onClick={() => handelRemoveImage()}
+                    />
+                  </>
+                )}
                   </td>
                   <tr><td>
                     {/* <img src={formValues.filename} alt="alt"></img> */}
