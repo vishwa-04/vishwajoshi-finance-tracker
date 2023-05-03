@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-function Login(){
-
+function Registration(){
     const initialValues = {
+        username : "",
         email : "",
         password : "",
     }
@@ -33,17 +33,34 @@ function Login(){
 
 
 
-
+    const { id } = useParams();
     useEffect(() => {
+        console.log(isSubmit,"issubmit");
         if (Object.keys(formError).length === 0 && isSubmit) {
-          if (localStorage.getItem("login") !== null) {
-            const data = JSON.parse(localStorage.getItem("login"));
+          if (localStorage.getItem("register") !== null) {
+            const data = JSON.parse(localStorage.getItem("register"));
     
+            if (id) {
+              for (const e in data) {
+                if (parseInt(data[e].id) === parseInt(id)) {
+                  // console.log(data[e].id, id, "e:id");
+                  formValues['id'] = id;
+                  data[e] = formValues;
+                  // console.log(data[e],formValues,"data[e]   :::::::: formvalues");
+                }
+              }
+            } else {
+              let previousId = data[data.length - 1].id;
+              formValues['id']= previousId+1
+              data.push(formValues);
+            }
+    
+            localStorage.setItem("register", JSON.stringify(data));
           } else {
-            
-            localStorage.setItem("login", JSON.stringify([formValues]));
+            formValues['id']= 1;
+            localStorage.setItem("register", JSON.stringify([formValues]));
           }
-          navigate("/");
+          navigate("/login");
         }
         //eslint-disable-next-line
       }, [formError]);
@@ -65,39 +82,52 @@ function Login(){
             errors.password = "password is required!"
         }
 
+        const data = JSON.parse(localStorage.getItem("register"));
+        for (const e in data) {
+            if (data[e].email === values.email) {
+              errors.email = "email already exists!"
+            }
+          }
 
         setIsSubmit(false)
         return errors;
     }
     return(
         <>
-<form onSubmit={submitHandle}>
-<section class="vh-100">
+ <form onSubmit={submitHandle}>
+ <section class="vh-100">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-12 col-md-8 col-lg-6 col-xl-5">
         <div class="card shadow-2-strong" style={{'border-radius': '1rem'}} >
           <div class="card-body p-5 text-center">
 
-            <h3 class="mb-5">Login</h3>
+            <h3 class="mb-5">Registration</h3>
 
+            <div class="form-outline mb-4">
+              <label class="form-label" for="typeEmailX-2">Username</label>
+              <input type="text" id="typeEmailX-2" class="form-control form-control-lg" name="username" onChange={handleChange}/>
+              <div className="errorStyle">{formError.username}</div>
+            </div>
             <div class="form-outline mb-4">
               <label class="form-label" for="typeEmailX-2">Email</label>
               <input type="email" id="typeEmailX-2" class="form-control form-control-lg" name="email" onChange={handleChange}/>
+              <div className="errorStyle">{formError.email}</div>
             </div>
 
             <div class="form-outline mb-4">
               <label class="form-label" for="typePasswordX-2">Password</label>
               <input type="password" id="typePasswordX-2" class="form-control form-control-lg" name="password" onChange={handleChange}/>
+              <div className="errorStyle">{formError.password}</div>
             </div>
 
             
            
 
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+            <button class="btn btn-primary btn-lg btn-block" type="submit">Register</button>
 
             <div>
-              <p class="mb-0">Don't have an account? <Link to={'/registration'}>Register</Link>
+              <p class="mb-0">Already have an account? <Link to={'/login'}>Login</Link>
               </p>
             </div>
 
@@ -108,8 +138,8 @@ function Login(){
     </div>
   </div>
 </section>
-</form>
+        </form>
         </>
     )
 };
-export default Login
+export default Registration

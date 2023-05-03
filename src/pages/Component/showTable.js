@@ -17,19 +17,19 @@ const months = [
   "December 2023",
 ];
 const ShowTable = () => {
-  const sortOrder = useRef("");
-  const [lastSortKey, setlastSortKey] = useState(null);
+  // const sortOrder = useRef("");
+  // const [lastSortKey, setlastSortKey] = useState(null);
   const [data, setData] = useState([]);
   const [groupData, setGroupData] = useState([]);
   const [getData, setgetData] = useState([]);
 
 
-  const sorter = (a, b) => {
-    return months.indexOf(a.month) - months.indexOf(b.month);
-  };
-  const sorterReverse = (a, b) => {
-    return months.indexOf(b.month) - months.indexOf(a.month);
-  };
+  // const sorter = (a, b) => {
+  //   return months.indexOf(a.month) - months.indexOf(b.month);
+  // };
+  // const sorterReverse = (a, b) => {
+  //   return months.indexOf(b.month) - months.indexOf(a.month);
+  // };
  
 
   useEffect(() => {
@@ -38,74 +38,74 @@ const ShowTable = () => {
     setData(getData);
   }, []);
 
-  function requestSort(currentKey, type) {
-    if (sortOrder.current === "asc" && lastSortKey === currentKey) {
-      sortOrder.current = "desc";
-    } else if (sortOrder.current === "desc" && lastSortKey === currentKey) {
-      sortOrder.current = "";
-    } else {
-      sortOrder.current = "asc";
-      setlastSortKey(currentKey);
-    }
-    sortingCondition(currentKey, type);
-  }
+  // function requestSort(currentKey, type) {
+  //   if (sortOrder.current === "asc" && lastSortKey === currentKey) {
+  //     sortOrder.current = "desc";
+  //   } else if (sortOrder.current === "desc" && lastSortKey === currentKey) {
+  //     sortOrder.current = "";
+  //   } else {
+  //     sortOrder.current = "asc";
+  //     setlastSortKey(currentKey);
+  //   }
+  //   sortingCondition(currentKey, type);
+  // }
 
-  function sortingCondition(currentKey, type) {
-    if (sortOrder.current === "asc" && type === undefined) {
-      let sort = [...getData].sort((a, b) =>
-        a[currentKey].localeCompare(b[currentKey])
-      );
-      setgetData(sort);
+  // function sortingCondition(currentKey, type) {
+  //   if (sortOrder.current === "asc" && type === undefined) {
+  //     let sort = [...getData].sort((a, b) =>
+  //       a[currentKey].localeCompare(b[currentKey])
+  //     );
+  //     setgetData(sort);
 
-      console.log(sort, sortOrder.current, "sort : sortOrder");
-    } else if (sortOrder.current === "desc" && type === undefined) {
-      let sort = [...getData].sort((a, b) =>
-        b[currentKey].localeCompare(a[currentKey])
-      );
-      setgetData(sort);
-    } else if (sortOrder.current === "" && type === undefined) {
-      let sort = data;
-      setgetData(sort);
-    }
+  //     console.log(sort, sortOrder.current, "sort : sortOrder");
+  //   } else if (sortOrder.current === "desc" && type === undefined) {
+  //     let sort = [...getData].sort((a, b) =>
+  //       b[currentKey].localeCompare(a[currentKey])
+  //     );
+  //     setgetData(sort);
+  //   } else if (sortOrder.current === "" && type === undefined) {
+  //     let sort = data;
+  //     setgetData(sort);
+  //   }
 
-    if (sortOrder.current === "asc" && type === "number") {
-      let sort = [...getData].sort(function (a, b) {
-        return a[currentKey] - b[currentKey];
-      });
-      setgetData(sort);
+  //   if (sortOrder.current === "asc" && type === "number") {
+  //     let sort = [...getData].sort(function (a, b) {
+  //       return a[currentKey] - b[currentKey];
+  //     });
+  //     setgetData(sort);
 
-      console.log("parseInt asc");
-    } else if (sortOrder.current === "desc" && type === "number") {
-      let sort = [...getData].sort(function (a, b) {
-        return b[currentKey] - a[currentKey];
-      });
-      setgetData(sort);
+  //     console.log("parseInt asc");
+  //   } else if (sortOrder.current === "desc" && type === "number") {
+  //     let sort = [...getData].sort(function (a, b) {
+  //       return b[currentKey] - a[currentKey];
+  //     });
+  //     setgetData(sort);
 
-      console.log("parseInt desc");
-    }
-    if (sortOrder.current === "" && type === "number") {
-      let sort = data;
-      setgetData(sort);
+  //     console.log("parseInt desc");
+  //   }
+  //   if (sortOrder.current === "" && type === "number") {
+  //     let sort = data;
+  //     setgetData(sort);
 
-      console.log("parseInt normal");
-    }
-    if (sortOrder.current === "asc" && type === "month") {
-      let sort = [...getData].sort(sorter);
-      setgetData(sort);
+  //     console.log("parseInt normal");
+  //   }
+  //   if (sortOrder.current === "asc" && type === "month") {
+  //     let sort = [...getData].sort(sorter);
+  //     setgetData(sort);
 
-      console.log(sort, "sort asc");
-    } else if (sortOrder.current === "desc" && type === "month") {
-      let sort = [...getData].sort(sorterReverse);
-      setgetData(sort);
+  //     console.log(sort, "sort asc");
+  //   } else if (sortOrder.current === "desc" && type === "month") {
+  //     let sort = [...getData].sort(sorterReverse);
+  //     setgetData(sort);
 
-      console.log(sort, "sort desc");
-    } else if (sortOrder.current === "" && type === "month") {
-      let sort = data;
-      setgetData(sort);
+  //     console.log(sort, "sort desc");
+  //   } else if (sortOrder.current === "" && type === "month") {
+  //     let sort = data;
+  //     setgetData(sort);
 
-      console.log(sort, "sort normal");
-    }
-  }
+  //     console.log(sort, "sort normal");
+  //   }
+  // }
   // let finalArray = null
   function handleChange(e) {
     let storeResult = {};
@@ -120,23 +120,7 @@ const ShowTable = () => {
     });
     setGroupData(storeResult);
   }
-const [filter,setFilter] = useState([])
-// const[value,setValue]=useState(0)
-function filterBySearch(e){
-  let querySearch = e.target.value
-  let filterData = [...getData];
- if(querySearch !== ""){
-  const filterTable = filterData.filter(items => Object.keys(items).some(data=> String(items[data]).toLowerCase().includes(querySearch.toLowerCase())));
-  setFilter(...filterTable)
-  console.log(filter,"filterrr length");
-}
-else{
-  setFilter(filter)
- 
-}
 
-}
-console.log(filter,"filter");
   return (
     <>
       <tr>
@@ -157,16 +141,9 @@ console.log(filter,"filter");
         
         {/* eslint-disable-next-line */}
       </tr>
-      <tr>
-        <td>
-        <div className="search-header">
-      <label>Search:</label>
-      <input id="search-box" onChange={filterBySearch} />
-    </div>
-        </td>
-      </tr>
-    
      
+    
+{/*      
              {filter.length !== 0 &&
                 
                 <Transaction requestSort={requestSort} getData={[filter]} months = {months}></Transaction>
@@ -174,9 +151,13 @@ console.log(filter,"filter");
              {filter.length === 0 &&
 
                 <Transaction requestSort={requestSort} getData={getData} months = {months}></Transaction>
-             }
+             } */}
+<>
 
-             
+          {/* {console.log(getData,"this is get data")} */}
+          <Transaction  getData={getData} months = {months}></Transaction>
+
+</>
                 
          
 
@@ -191,8 +172,7 @@ console.log(filter,"filter");
                 <h2>{data}</h2>
              
                 <>
-                {console.log(data,"data")}
-                <Transaction requestSort={requestSort} getData={groupData[data]} months = {months}></Transaction>
+                <Transaction getData={groupData[data]} months = {months}></Transaction>
                 </>
              
               </>

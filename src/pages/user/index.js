@@ -33,7 +33,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
   const [formValues, setFormValues] = useState(initialValues);
   const [formError, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
-  // const fileExtension = [".jpg", ".png", ".jpeg"];
+  // const fileExtension = ["/jpg", "/png", "/jpeg"];
 
   function submitHandle(e) {
     e.preventDefault();
@@ -41,15 +41,10 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
     setIsSubmit(true);
   }
   const { id } = useParams();
-  useEffect(() => {
-    if (!isUpdate) {
-      let previousId = JSON.parse(localStorage.getItem("items"));
-      const id = localStorage.getItem("items") ? previousId.length + 1 : 1;
-      setFormValues({ ...formValues, id: id });
-    }
-  }, []);
+
 
   useEffect(() => {
+    console.log(isSubmit,"issubmit");
     if (Object.keys(formError).length === 0 && isSubmit) {
       if (localStorage.getItem("items") !== null) {
         const data = JSON.parse(localStorage.getItem("items"));
@@ -57,10 +52,10 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
         if (id) {
           for (const e in data) {
             if (parseInt(data[e].id) === parseInt(id)) {
-              console.log(data[e].id, id, "e:id");
+              // console.log(data[e].id, id, "e:id");
               formValues['id'] = id;
               data[e] = formValues;
-              console.log(data[e],formValues,"data[e]   :::::::: formvalues");
+              // console.log(data[e],formValues,"data[e]   :::::::: formvalues");
             }
           }
         } else {
@@ -77,7 +72,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
       navigate("/showTable");
     }
     //eslint-disable-next-line
-  }, [formError]);
+  }, [isSubmit]);
   const handelRemoveImage = () => {
     setFormValues({ ...formValues, filename: "" });
   };
@@ -86,22 +81,21 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
 
 
 
-  function handleChange(e) {
-
+function handleChange(e) {
+console.log(e.target.value,"ee");
     const { name, value } = e.target;
     if (e.target.type === "file") {
       if (e.target.files[0]) {
-        console.log(e.target.files[0].name, ":::::::::::::::");
         if (e.target.files[0].size > 200000) {
-          // e.target.files[0].name = ""
           alert("too big");
+
         } else {
           let reader = new FileReader();
           reader.readAsDataURL(e.target.files[0]);
-          console.log(reader);
+          // console.log(reader);
           reader.addEventListener("load", function () {
             let val = this.result;
-            console.log(val);
+            // console.log(val);
             setFormValues({ ...formValues, filename: val });
           });
         }
@@ -110,9 +104,16 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
 
     setFormValues({ ...formValues, [name]: value });
   }
+  // useEffect(()=>{
+   
+  //   if(formValues !== initialValues){
+  //     setFormErrors(validate(formValues))
+  //   }
+  // },[formValues])
 
   function validate(values) {
     const errors = {};
+    console.log("function validation called")
     console.log(values);
 
     if (values.transDate === "") {
@@ -144,19 +145,28 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
       errors.amount = "Amount cannot be less than 0 !";
     }
 
-    console.log(values.filename, "filenameeee");
+    // console.log(values.filename, "filenameeee");
     if (!values.filename) {
       errors.filename = "File is a required field !";
     }
 
-    console.log(values.filename.size, "filesize");
+  //   else {
+  //   let newfileExtension = values.filename.slice(10,14);
+  //   console.log(newfileExtension,values.filename,"current console");
+  //    if (!fileExtension.includes(newfileExtension)) {
+  //     console.log("hey");
+  //      errors.filename = "only png,jpg,jpeg file supported !"
+  //   }
+  // }
+    // console.log(values.filename.size, "filesize");
 
     if (values.notes === "") {
       errors.notes = "Notes is a required field !";
     } else if (values.notes.length > 250) {
       errors.notes = "Notes too long !";
     }
-    console.log(Object.keys(errors).length, "::::errors ");
+    // console.log(Object.keys(errors).length, "::::errors ");
+    setIsSubmit(false);
     return errors;
   }
 
@@ -329,6 +339,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                         type="file"
                         id="myFile"
                         onChange={handleChange}
+                        value={formValues.filename}
                       />
                       
                     }

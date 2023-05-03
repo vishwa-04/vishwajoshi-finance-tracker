@@ -12,6 +12,7 @@ import ShowTable from './pages/Component/showTable';
 import reportWebVitals from './reportWebVitals';
 import ViewTransaction from './pages/Component/transaction';
 import UpdateTransaction from './pages/Component/update';
+import Registration from './pages/Component/registration';
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,10 @@ const router = createBrowserRouter([
   {
     path: `/login`,
     element:<Login/>
+  },
+  {
+    path: `/registration`,
+    element:<Registration/>
   },
   
 ]);

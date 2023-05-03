@@ -1,12 +1,112 @@
-import { useState } from "react";
+import { useState ,useEffect, useRef,} from "react";
 import { Link } from "react-router-dom";
+import '../user/css/transactiontable.css'
 
 
 export const Transaction  = (props) =>{
      
 
+  const sortOrder = useRef("");
+  const [lastSortKey, setlastSortKey] = useState(null);
+  const [data, setData] = useState(props.getData);
+  // const [groupData, setGroupData] = useState([]);
+  const [getData, setGetData] = useState(props.getData);
+
+
+
+  const sorter = (a, b) => {
+    return months.indexOf(a.month) - months.indexOf(b.month);
+  };
+  const sorterReverse = (a, b) => {
+    return months.indexOf(b.month) - months.indexOf(a.month);
+  };
+ 
+
+  useEffect(() => {
+    setGetData(props.getData);
+    setData(props.getData);
+  }, [props.getData]);
+
+  function requestSort(currentKey, type) {
+    setCurrentPage(1);
+    if (sortOrder.current === "asc" && lastSortKey === currentKey) {
+      sortOrder.current = "desc";
+    }
+    
+    else if (sortOrder.current === "desc" && lastSortKey === currentKey) {
+      sortOrder.current = "";
+    } 
+    
+    else {
+      sortOrder.current = "asc";
+      setlastSortKey(currentKey);
+    
+    }
+    sortingCondition(currentKey, type);
+  }
+
+  function sortingCondition(currentKey, type) {
+    if (sortOrder.current === "asc" && type === undefined) {
+      let sort = [...getData].sort((a, b) =>
+        a[currentKey].localeCompare(b[currentKey])
+      );
+      setGetData(sort);
+
+      // console.log(sort, sortOrder.current, "sort : sortOrder");
+    } else if (sortOrder.current === "desc" && type === undefined) {
+      let sort = [...getData].sort((a, b) =>
+      b[currentKey].localeCompare(a[currentKey])
+      );
+      setGetData(sort);
+    } else if (sortOrder.current === "" && type === undefined) {
+      let sort = data;
+      // console.log(sort, sortOrder.current, "sort : sortOrder");
+      setGetData(sort);
+    }
+
+    if (sortOrder.current === "asc" && type === "number") {
+      let sort = [...getData].sort(function (a, b) {
+        return a[currentKey] - b[currentKey];
+      });
+      setGetData(sort);
+
+      // console.log("parseInt asc");
+    } else if (sortOrder.current === "desc" && type === "number") {
+      let sort = [...getData].sort(function (a, b) {
+        return b[currentKey] - a[currentKey];
+      });
+      setGetData(sort);
+
+      // console.log("parseInt desc");
+    }
+    if (sortOrder.current === "" && type === "number") {
+      let sort = data;
+      setGetData(sort);
+
+      // console.log("parseInt normal");
+    }
+    if (sortOrder.current === "asc" && type === "month") {
+      let sort = [...getData].sort(sorter);
+      setGetData(sort);
+
+      // console.log(sort, "sort asc");
+    } else if (sortOrder.current === "desc" && type === "month") {
+      let sort = [...getData].sort(sorterReverse);
+      setGetData(sort);
+
+      // console.log(sort, "sort desc");
+    } else if (sortOrder.current === "" && type === "month") {
+      let sort = data;
+      setGetData(sort);
+
+      // console.log(sort, "sort normal");
+    }
+  }
+
+
+
+
     const months = props.months;
-    const getData = props.getData
     const [currentPage, setCurrentPage] = useState(1);
     let recordsPerPage = 3;
     let lastIndex = currentPage * recordsPerPage;
@@ -16,22 +116,54 @@ export const Transaction  = (props) =>{
     const numbers = [...Array(totalPages + 1).keys()].slice(1);
   
     function prePage() {
-      if (currentPage !== firstIndex) {
+      // console.log(currentPage,firstIndex,"prepage");
+  
         setCurrentPage(currentPage - 1);
-      }
+      
     }
   
     function changeCurrentPage(id) {
       setCurrentPage(id);
     }
     function NextPage() {
+      // console.log(currentPage,lastIndex,"nextpage");
       if (currentPage !== lastIndex) {
         setCurrentPage(currentPage + 1);
       }
     }
-    const requestSort = props.requestSort
-    // const records = props.records
+
+
+
+
+function filterBySearch(e){
+  let querySearch = e.target.value
+  let filterData = props.getData;
+  // console.log(filterData,"this is filter data");
+  if(querySearch !== ""){
+  const filterTable = filterData.filter( (items) => { 
+    return  Object.keys(items).some(
+            data =>
+              String(items[data]).toLowerCase().includes(querySearch.toLowerCase())
+            )
+        }
+  );
+    setGetData(filterTable)
+    console.log(getData);
+
+}
+else{
+  setGetData(props.getData)
+ 
+}
+
+}
+    
     return(<>
+
+    <div>
+      
+    <input type="text" placeholder="Search.." onInput={filterBySearch}/>
+    </div>
       <table className="table table-secondary">
         <thead>
           <tr>
@@ -126,7 +258,7 @@ export const Transaction  = (props) =>{
         <ul className="pagination">
           <li className="page-item">
             <span
-              className="page-link"
+            className={`page-link ${currentPage === 1 ? "disable":""}`}
               onClick={prePage}
               style={{ cursor: "pointer" }}
             >
@@ -147,12 +279,15 @@ export const Transaction  = (props) =>{
               </span>
             </li>
           ))}
+          {/* {console.log(currentPage,totalPages,"curr")} */}
           <li className="page-item">
             <span
-              className="page-link"
+            
+              className={`page-link ${currentPage === totalPages ? "disable":""}`}
               onClick={NextPage}
               style={{ cursor: "pointer" }}
             >
+
               Next
             </span>
           </li>
