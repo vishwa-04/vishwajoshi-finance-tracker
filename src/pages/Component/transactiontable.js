@@ -105,33 +105,27 @@ export const Transaction  = (props) =>{
 
 
 
-
+  const [currentPage, setCurrentPage] = useState(1);
+  let recordsPerPage = 3;
+  let lastIndex = currentPage * recordsPerPage;
+  let firstIndex = lastIndex - recordsPerPage;
+  const totalPages = Math.ceil(getData && getData.length / recordsPerPage);
+  const numbers = [...Array(totalPages + 1).keys()].slice(1);
     const months = props.months;
-    const [currentPage, setCurrentPage] = useState(1);
-    let recordsPerPage = 3;
-    let lastIndex = currentPage * recordsPerPage;
-    let firstIndex = lastIndex - recordsPerPage;
-    const records = getData.slice(firstIndex, lastIndex);
-    const totalPages = Math.ceil(getData.length / recordsPerPage);
-    const numbers = [...Array(totalPages + 1).keys()].slice(1);
+    
   
     function prePage() {
-      // console.log(currentPage,firstIndex,"prepage");
-  
-        setCurrentPage(currentPage - 1);
-      
+        setCurrentPage(currentPage - 1);  
     }
   
+
     function changeCurrentPage(id) {
       setCurrentPage(id);
     }
-    function NextPage() {
-      // console.log(currentPage,lastIndex,"nextpage");
-      if (currentPage !== lastIndex) {
-        setCurrentPage(currentPage + 1);
-      }
-    }
 
+    function NextPage() {
+        setCurrentPage(currentPage + 1);
+    }
 
 
 
@@ -143,7 +137,8 @@ function filterBySearch(e){
   const filterTable = filterData.filter( (items) => { 
     return  Object.keys(items).some(
             data =>
-              String(items[data]).toLowerCase().includes(querySearch.toLowerCase())
+            (data!=='filename' && data!=='id')&&
+              String(items[data]).toLowerCase().includes(querySearch.trim().toLowerCase())
             )
         }
   );
@@ -217,7 +212,8 @@ else{
           </tr>
         </thead>
         <tbody>
-          {records.map((data, index) => {
+          <>
+          { getData ? getData.slice(firstIndex, lastIndex).map((data, index) => {
             return (
               <tr key={index}>
                 <td>{data.transDate}</td>
@@ -243,15 +239,17 @@ else{
                 <td>{data.notes}</td>
                 <td>
                   {" "}
-                  <Link  to={`/transaction/${data.id}`}>View</Link>
+                  <Link  to={`${data.id}`}>View</Link>
                 </td>
                 <td>
                   {" "}
-                  <Link  to={`/update/${data.id}`}>Update</Link>
+                  <Link  to={`update/${data.id}`}>Update</Link>
                 </td>
               </tr>
             );
-          })}
+          }):<h1>No Data Found</h1>
+        }
+          </>
         </tbody>
       </table>
       <nav>

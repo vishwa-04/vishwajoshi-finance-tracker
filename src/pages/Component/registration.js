@@ -95,39 +95,39 @@ function Registration(){
     return(
         <>
  <form onSubmit={submitHandle}>
- <section class="vh-100">
-  <div class="container py-5 h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <div class="card shadow-2-strong" style={{'border-radius': '1rem'}} >
-          <div class="card-body p-5 text-center">
+ <section className="vh-100">
+  <div className="container py-5 h-100">
+    <div className="row d-flex justify-content-center align-items-center h-100">
+      <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+        <div className="card shadow-2-strong" >
+          <div className="card-body p-5 text-center">
 
-            <h3 class="mb-5">Registration</h3>
+            <h3 className="mb-5">Registration</h3>
 
-            <div class="form-outline mb-4">
-              <label class="form-label" for="typeEmailX-2">Username</label>
-              <input type="text" id="typeEmailX-2" class="form-control form-control-lg" name="username" onChange={handleChange}/>
+            <div className="form-outline mb-4">
+              <label className="form-label" htmlFor="typeEmailX-2">Username</label>
+              <input type="text" id="typeEmailX-2" className="form-control form-control-lg" name="username" onChange={handleChange}/>
               <div className="errorStyle">{formError.username}</div>
             </div>
-            <div class="form-outline mb-4">
-              <label class="form-label" for="typeEmailX-2">Email</label>
-              <input type="email" id="typeEmailX-2" class="form-control form-control-lg" name="email" onChange={handleChange}/>
+            <div className="form-outline mb-4">
+              <label className="form-label" htmlFor="typeEmailX-2">Email</label>
+              <input type="email" id="typeEmailX-2" className="form-control form-control-lg" name="email" onChange={handleChange}/>
               <div className="errorStyle">{formError.email}</div>
             </div>
 
-            <div class="form-outline mb-4">
-              <label class="form-label" for="typePasswordX-2">Password</label>
-              <input type="password" id="typePasswordX-2" class="form-control form-control-lg" name="password" onChange={handleChange}/>
+            <div className="form-outline mb-4">
+              <label className="form-label" htmlFor="typePasswordX-2">Password</label>
+              <input type="password" id="typePasswordX-2" className="form-control form-control-lg" name="password" onChange={handleChange}/>
               <div className="errorStyle">{formError.password}</div>
             </div>
 
             
            
 
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Register</button>
+            <button className="btn btn-primary btn-lg btn-block" type="submit">Register</button>
 
             <div>
-              <p class="mb-0">Already have an account? <Link to={'/login'}>Login</Link>
+              <p className="mb-0">Already have an account? <Link to={'/login'}>Login</Link>
               </p>
             </div>
 

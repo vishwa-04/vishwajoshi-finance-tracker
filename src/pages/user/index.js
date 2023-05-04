@@ -28,67 +28,208 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
         filename: "",
         notes: "",
       });
-  const navigate = useNavigate();
 
-  const [formValues, setFormValues] = useState(initialValues);
-  const [formError, setFormErrors] = useState({});
+
+
+      const navigate = useNavigate();
+      const [formValues, setFormValues] = useState(initialValues);
+
+
+      const [formError, setFormErrors] = useState({
+    transDate: "",
+    month: "",
+    transType: "",
+    frmAcc: "",
+    toAcc: "",
+    amount: "",
+    filename: "",
+    notes: "",
+    checkaccounts: "",
+  });
+
   const [isSubmit, setIsSubmit] = useState(false);
-  // const fileExtension = ["/jpg", "/png", "/jpeg"];
+
 
   function submitHandle(e) {
     e.preventDefault();
-    setFormErrors(validate(formValues));
+    //validation changes start
+    const validateFormValues = { ...formValues };
+    let sendError = { ...formError };
+
+    Object.keys(validateFormValues).map((key, index) => {
+      if (validateFormValues[key] === "") {
+        sendError = { ...sendError, [key]: "required*" };
+      } else if (validateFormValues["frmAcc"] === validateFormValues["toAcc"]) {
+        sendError = {
+          ...sendError,
+          checkaccounts: "From account and to account can not be same",
+        };
+      } else {
+        sendError = { ...sendError, [key]: "", checkaccounts: "" };
+      }
+      // e.preventDefault();
+    });
+    setFormErrors(sendError);
+    //validation changes end
+    //  setFormErrors(validate(formValues));
     setIsSubmit(true);
   }
+  console.log(isSubmit, "submitttt");
   const { id } = useParams();
-
-
   useEffect(() => {
-    console.log(isSubmit,"issubmit");
-    if (Object.keys(formError).length === 0 && isSubmit) {
-      if (localStorage.getItem("items") !== null) {
-        const data = JSON.parse(localStorage.getItem("items"));
+    console.log(isSubmit, "use-effect");
+    const errorlength = Object.values(formError).filter(
+      (items) => items !== ""
+    );
+    console.log("error length", errorlength.length);
+    if (errorlength.length === 0 && isSubmit) {
+      const login = JSON.parse(localStorage.getItem("login"));
+      const items = login[0].email;
+      if (localStorage.getItem(items) !== null) {
+        const data = JSON.parse(localStorage.getItem(items));
 
         if (id) {
           for (const e in data) {
             if (parseInt(data[e].id) === parseInt(id)) {
-              // console.log(data[e].id, id, "e:id");
-              formValues['id'] = id;
+              console.log(data[e].id, id, "e:id");
+              formValues["id"] = parseInt(id);
               data[e] = formValues;
               // console.log(data[e],formValues,"data[e]   :::::::: formvalues");
             }
           }
         } else {
           let previousId = data[data.length - 1].id;
-          formValues['id']= previousId+1
+          formValues["id"] = previousId + 1;
           data.push(formValues);
         }
 
-        localStorage.setItem("items", JSON.stringify(data));
+        localStorage.setItem(items, JSON.stringify(data));
       } else {
-        formValues['id']= 1;
-        localStorage.setItem("items", JSON.stringify([formValues]));
+        formValues["id"] = 1;
+        localStorage.setItem(items, JSON.stringify([formValues]));
       }
       navigate("/showTable");
     }
     //eslint-disable-next-line
   }, [isSubmit]);
+
   const handelRemoveImage = () => {
     setFormValues({ ...formValues, filename: "" });
   };
 
+  function handleChange(e) {
+    //validation changes start here
 
+    const storeFomValues = {
+      ...formValues,
+      [e.target.name]: e.target.value,
+    };
+    setFormValues(storeFomValues);
+    switch (e.target.name) {
+      case "transDate":
+        //const trnsactionDate = e.target.value
+        if (e.target.value) {
+          setFormErrors({
+            ...formError,
+            transDate: "",
+          });
+        }
+        setIsSubmit(false);
 
+        break;
+      case "month":
+        //const monthYear = e.target.value
 
+        if (e.target.value) {
+          setFormErrors({
+            ...formError,
+            month: "",
+          });
+          setIsSubmit(false);
+        }
+        break;
 
-function handleChange(e) {
-console.log(e.target.value,"ee");
-    const { name, value } = e.target;
+      case "transType":
+        if (e.target.value) {
+          setFormErrors({
+            ...formError,
+            transType: "",
+          });
+          setIsSubmit(false);
+        }
+        break;
+
+      case "frmAcc":
+        if (e.target.value) {
+          setFormErrors({
+            ...formError,
+            frmAcc: "",
+          });
+          setIsSubmit(false);
+        }
+        break;
+
+      case "toAcc":
+        if (e.target.value) {
+          setFormErrors({
+            ...formError,
+            toAcc: "",
+          });
+          setIsSubmit(false);
+        }
+
+        break;
+
+      case "amount":
+        if (e.target.value < 0) {
+          setFormErrors({
+            ...formError,
+            amount: "The Amount must be atleast greater then 0",
+          });
+        } else {
+          setFormErrors({
+            ...formError,
+            amount: "",
+          });
+        }
+        setIsSubmit(false);
+        break;
+
+      case "notes":
+        if (e.target.value.length < 240) {
+          setFormErrors({
+            ...formError,
+            notes: "",
+          });
+        } else {
+          setFormErrors({
+            ...formError,
+            notes: "The length of your notes must be less then 240",
+          });
+        }
+        setIsSubmit(false);
+
+        break;
+      case "filename":
+        if (e.target.value) {
+          setFormErrors({
+            ...formError,
+            filename: "",
+          });
+        }
+        setIsSubmit(false);
+        break;
+      default:
+        break;
+    }
+
+    // validation changes end here
+
     if (e.target.type === "file") {
+      console.log("inside the file case");
       if (e.target.files[0]) {
         if (e.target.files[0].size > 200000) {
           alert("too big");
-
         } else {
           let reader = new FileReader();
           reader.readAsDataURL(e.target.files[0]);
@@ -96,81 +237,14 @@ console.log(e.target.value,"ee");
           reader.addEventListener("load", function () {
             let val = this.result;
             // console.log(val);
+
             setFormValues({ ...formValues, filename: val });
+            setFormErrors({ ...formError, filename: "" });
           });
         }
       }
     }
-
-    setFormValues({ ...formValues, [name]: value });
   }
-  // useEffect(()=>{
-   
-  //   if(formValues !== initialValues){
-  //     setFormErrors(validate(formValues))
-  //   }
-  // },[formValues])
-
-  function validate(values) {
-    const errors = {};
-    console.log("function validation called")
-    console.log(values);
-
-    if (values.transDate === "") {
-      errors.transDate = "Date is a required field !";
-    }
-
-    if (values.month === "" || values.month === "0") {
-      errors.month = " Month is a required field !";
-    }
-
-    if (values.transType === "") {
-      errors.transType = "Transaction Type is a required field !";
-    }
-
-    if (values.frmAcc === "") {
-      errors.frmAcc = "From Account is a required field !";
-    } else if (values.frmAcc === values.toAcc) {
-      errors.frmAcc = "From Account and To Account cannot be same";
-      errors.toAcc = "From Account and To Account cannot be same";
-    }
-
-    if (values.toAcc === "") {
-      errors.toAcc = "To Account is a required field !";
-    }
-
-    if (values.amount === "") {
-      errors.amount = "Please enter amount !";
-    } else if (values.amount < 0) {
-      errors.amount = "Amount cannot be less than 0 !";
-    }
-
-    // console.log(values.filename, "filenameeee");
-    if (!values.filename) {
-      errors.filename = "File is a required field !";
-    }
-
-  //   else {
-  //   let newfileExtension = values.filename.slice(10,14);
-  //   console.log(newfileExtension,values.filename,"current console");
-  //    if (!fileExtension.includes(newfileExtension)) {
-  //     console.log("hey");
-  //      errors.filename = "only png,jpg,jpeg file supported !"
-  //   }
-  // }
-    // console.log(values.filename.size, "filesize");
-
-    if (values.notes === "") {
-      errors.notes = "Notes is a required field !";
-    } else if (values.notes.length > 250) {
-      errors.notes = "Notes too long !";
-    }
-    // console.log(Object.keys(errors).length, "::::errors ");
-    setIsSubmit(false);
-    return errors;
-  }
-
-  // console.log(formError)
 
   const date = new Date();
   let year = date.getFullYear();
@@ -196,7 +270,15 @@ console.log(e.target.value,"ee");
                     ></input>
                     <tr>
                       <td>
-                        <div className="errorStyle">{formError.transDate}</div>
+                        <div>
+                          {formError.transDate ? (
+                            <label style={{ color: "red" }}>
+                              Date is {formError.transDate}
+                            </label>
+                          ) : (
+                            ""
+                          )}
+                        </div>
                       </td>
                     </tr>
                   </td>
@@ -234,7 +316,15 @@ console.log(e.target.value,"ee");
                         December {year}
                       </option>
                     </select>
-                    <div className="errorStyle">{formError.month}</div>
+                    <div>
+                      {formError.month ? (
+                        <label style={{ color: "red" }}>
+                          Month is {formError.month}
+                        </label>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -253,7 +343,15 @@ console.log(e.target.value,"ee");
                       <option value="Personal Expense">Personal Expense</option>
                       <option value="Income">Income</option>
                     </select>
-                    <div className="errorStyle">{formError.transType}</div>
+                    <div>
+                      {formError.transType ? (
+                        <label style={{ color: "red" }}>
+                          Transaction Type is {formError.transType}
+                        </label>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -275,7 +373,15 @@ console.log(e.target.value,"ee");
                       <option value="Core Realtors">Core Realtors</option>
                       <option value="Big Block">Big Block</option>
                     </select>
-                    <div className="errorStyle">{formError.frmAcc}</div>
+                    <div>
+                      {formError.frmAcc ? (
+                        <label style={{ color: "red" }}>
+                          From Account is {formError.frmAcc}
+                        </label>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </td>
                 </tr>
                 <tr>
@@ -297,7 +403,25 @@ console.log(e.target.value,"ee");
                       <option value="Core Realtors">Core Realtors</option>
                       <option value="Big Block">Big Block</option>
                     </select>
-                    <div className="errorStyle">{formError.toAcc}</div>
+                    <div>
+                      {formError.toAcc ? (
+                        <label style={{ color: "red" }}>
+                          To Account is {formError.toAcc}
+                        </label>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+
+                    {formError.checkaccounts ? (
+                      <div className="sameAccountError">
+                        <label style={{ color: "red" }}>
+                          {formError.checkaccounts}
+                        </label>
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </td>
                 </tr>
 
@@ -312,7 +436,15 @@ console.log(e.target.value,"ee");
                       value={formValues.amount}
                       onChange={handleChange}
                     ></input>
-                    <div className="errorStyle">{formError.amount}</div>
+                    <div>
+                      {formError.amount ? (
+                        <label style={{ color: "red" }}>
+                          Amount is {formError.amount}
+                        </label>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </td>
                 </tr>
 
@@ -321,9 +453,9 @@ console.log(e.target.value,"ee");
                     <label>Receipt</label>
                   </td>
                   <td>
-                    {
-                    formValues.filename ? 
-                      <><img
+                    {formValues.filename ? (
+                      <>
+                        <img
                           style={{ width: "200px" }}
                           alt="img"
                           src={formValues.filename}
@@ -334,17 +466,24 @@ console.log(e.target.value,"ee");
                           onClick={() => handelRemoveImage()}
                         />
                       </>
-                     : 
+                    ) : (
                       <input
                         type="file"
                         id="myFile"
                         onChange={handleChange}
                         value={formValues.filename}
                       />
-                      
-                    }
+                    )}
                   </td>
-                  <div className="errorStyle">{formError.filename}</div>
+                  <div>
+                    {formError.filename ? (
+                      <label style={{ color: "red" }}>
+                        Filename is {formError.filename}
+                      </label>
+                    ) : (
+                      ""
+                    )}
+                  </div>
                   <td>
                     {/* {removeImage ? (
                   <>
@@ -393,7 +532,15 @@ console.log(e.target.value,"ee");
                       value={formValues.notes}
                       onChange={handleChange}
                     ></textarea>
-                    <div className="errorStyle">{formError.notes}</div>
+                    <div>
+                      {formError.notes ? (
+                        <label style={{ color: "red" }}>
+                          Notes is {formError.notes}
+                        </label>
+                      ) : (
+                        ""
+                      )}
+                    </div>
                   </td>
                 </tr>
                 <tr>

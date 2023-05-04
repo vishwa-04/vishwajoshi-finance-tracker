@@ -5,11 +5,12 @@ import FinanceTracker from '../user';
 
 export default function UpdateTransaction() {
     const { id } = useParams();
-    const data = JSON.parse(localStorage.getItem("items"));
+    const login = JSON.parse(localStorage.getItem("login"));
+    const items = login[0].email;
+    const data = JSON.parse(localStorage.getItem(items));
     // console.log(data);
     const index = data.findIndex((ele) => ele.id == id);
-    // console.log(index,"this is index");
-    // console.log(data[index],"this is dataaaaaa");
+
   return (
     <div>
       {

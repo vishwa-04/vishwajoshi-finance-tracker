@@ -1,115 +1,144 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-function Login(){
+import { Link, useNavigate } from "react-router-dom";
+function Login() {
+  const initialValues = {
+    email: "",
+    password: "",
+  };
 
-    const initialValues = {
-        email : "",
-        password : "",
-    }
+  const [formValues, setFormValues] = useState(initialValues);
+  const [formError, setFormErrors] = useState({});
+  const [isSubmit, setIsSubmit] = useState(false);
+  const navigate = useNavigate();
 
+  function submitHandle(e) {
+    e.preventDefault();
+    setFormErrors(validate(formValues));
+    setIsSubmit(true);
+  }
 
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  }
 
-    const [formValues, setFormValues] = useState(initialValues);
-    const [formError, setFormErrors] = useState({});
-    const [isSubmit, setIsSubmit] = useState(false);
-    const navigate = useNavigate();
+  useEffect(() => {
+    const errorlength = Object.values(formError).filter(
+      (items) => items !== ""
+    );
+    if (errorlength.length === 0 && isSubmit) {
+      const register = JSON.parse(localStorage.getItem("register"));
 
-
-
-    function submitHandle(e) {
-        e.preventDefault();
-        setFormErrors(validate(formValues));
-        setIsSubmit(true);
-      }
-
-
-
-    function handleChange(e){
-        const {name,value}= e.target;
-        setFormValues({...formValues,[name]:value})
-    }
-
-
-
-
-
-
-    useEffect(() => {
-        if (Object.keys(formError).length === 0 && isSubmit) {
-          if (localStorage.getItem("login") !== null) {
-            const data = JSON.parse(localStorage.getItem("login"));
-    
-          } else {
-            
-            localStorage.setItem("login", JSON.stringify([formValues]));
+      for (const e in register) {
+        if (
+          register[e].email === formValues.email &&
+          register[e].password === formValues.password
+        ) {
+          let characters = "abcdefghikl1234567890mnopqrstuvwxyz";
+          let randomstring = "";
+          for (var i = 0; i < 16; i++) {
+            var rnum = Math.floor(Math.random() * characters.length);
+            randomstring += characters.substring(rnum, rnum + 1);
           }
-          navigate("/");
+          formValues["token"] = randomstring;
+          console.log(formValues, "login values");
+          localStorage.setItem("login", JSON.stringify([formValues]));
+          console.log("Login Successfull");
+          navigate("/showTable");
+        } else if (
+          register[e].email !== formValues.email &&
+          register[e].password !== formValues.password
+        ) {
+          console.log("login fail");
+          navigate("/login");
         }
-        //eslint-disable-next-line
-      }, [formError]);
-
-
-
-
-    function validate(values){
-        const errors = {}
-        if(values.username === ""){
-            errors.username = "username is required!"
-        }
-
-        if(values.email === ""){
-            errors.email = "email is required!"
-        }
-
-        if(values.password === ""){
-            errors.password = "password is required!"
-        }
-
-
-        setIsSubmit(false)
-        return errors;
+      }
     }
-    return(
-        <>
-<form onSubmit={submitHandle}>
-<section class="vh-100">
-  <div class="container py-5 h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <div class="card shadow-2-strong" style={{'border-radius': '1rem'}} >
-          <div class="card-body p-5 text-center">
+    //eslint-disable-next-line
+  }, [formError]);
 
-            <h3 class="mb-5">Login</h3>
+  function validate(values) {
+    const errors = {};
 
-            <div class="form-outline mb-4">
-              <label class="form-label" for="typeEmailX-2">Email</label>
-              <input type="email" id="typeEmailX-2" class="form-control form-control-lg" name="email" onChange={handleChange}/>
+    if (values.email === "") {
+      errors.email = "email is required!";
+    }
+
+    if (values.password === "") {
+      errors.password = "password is required!";
+    }
+    const register = JSON.parse(localStorage.getItem("register"));
+    for (const e in register) {
+      if (
+        register[e].email !== formValues.email &&
+        register[e].password !== formValues.password
+      ) {
+        errors.password = "Wrong email or password";
+      }
+    }
+    setIsSubmit(false);
+    return errors;
+  }
+  return (
+    <>
+      <form onSubmit={submitHandle}>
+        <section className="vh-100">
+          <div className="container py-5 h-100">
+            <div className="row d-flex justify-content-center align-items-center h-100">
+              <div className="col-12 col-md-8 col-lg-6 col-xl-5">
+                <div className="card shadow-2-strong">
+                  <div className="card-body p-5 text-center">
+                    <h3 className="mb-5">Login</h3>
+
+                    <div className="form-outline mb-4">
+                      <label className="form-label" htmlFor="typeEmailX-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        id="typeEmailX-2"
+                        className="form-control form-control-lg"
+                        name="email"
+                        onChange={handleChange}
+                      />
+                      <div className="errorStyle">{formError.email}</div>
+                    </div>
+
+                    <div className="form-outline mb-4">
+                      <label className="form-label" htmlFor="typePasswordX-2">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        id="typePasswordX-2"
+                        className="form-control form-control-lg"
+                        name="password"
+                        onChange={handleChange}
+                      />
+                      <div className="errorStyle">{formError.password}</div>
+                    </div>
+
+                    <button
+                      className="btn btn-primary btn-lg btn-block"
+                      type="submit"
+                    >
+                      Login
+                    </button>
+
+                    <div>
+                      <p className="mb-0">
+                        Don't have an account?{" "}
+                        <Link to={"/registration"}>Register</Link>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-
-            <div class="form-outline mb-4">
-              <label class="form-label" for="typePasswordX-2">Password</label>
-              <input type="password" id="typePasswordX-2" class="form-control form-control-lg" name="password" onChange={handleChange}/>
-            </div>
-
-            
-           
-
-            <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
-
-            <div>
-              <p class="mb-0">Don't have an account? <Link to={'/registration'}>Register</Link>
-              </p>
-            </div>
-
-           
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-</form>
-        </>
-    )
-};
-export default Login
+        </section>
+      </form>
+    </>
+  );
+}
+export default Login;

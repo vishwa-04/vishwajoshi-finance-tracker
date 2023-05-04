@@ -4,7 +4,9 @@ import "../user/showTable.css";
 const ViewTransaction = () => {
   const { id } = useParams();
   console.log(id,"iddd");
-  const getData = JSON.parse(localStorage.getItem("items"));
+  const login = JSON.parse(localStorage.getItem("login"));
+  const items = login[0].email;
+  const getData = JSON.parse(localStorage.getItem(items));
   const [transaction] = getData.filter(ele=>ele.id==id);
   // console.log(data,"data");
   return (
