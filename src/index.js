@@ -17,6 +17,7 @@ import ViewTransaction from './pages/Component/transaction';
 import UpdateTransaction from './pages/Component/update';
 import Registration from './pages/Component/registration';
 import FinanceTracker from './pages/user';
+import Error from './pages/Component/Error';
 
 
 
@@ -51,6 +52,7 @@ const router = createBrowserRouter(
         <Route path='update/:id' element={<Protected cmp={<UpdateTransaction />} />} /> 
       </Route>
       <Route path='' element={<Navigate to={'/showTable'} />} />
+      <Route path='*'element={<Protected cmp={<Error />} />}/>
     </Route>
   )
 );

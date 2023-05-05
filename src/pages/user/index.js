@@ -278,6 +278,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       name="transDate"
                       value={formValues.transDate}
                       onChange={handleChange}
+                 
                     ></input>
                     <tr>
                       <td>
@@ -349,7 +350,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       onChange={handleChange}
                       value={formValues.transType}
                     >
-                     <option  hidden disabled  value="" selected >--Select From Account--</option>
+                     <option  hidden disabled  value="" selected >--Select Transaction Type--</option>
                       <option value="Home">Home</option>
                       <option value="Personal Expense">Personal Expense</option>
                       <option value="Income">Income</option>
@@ -406,7 +407,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       onChange={handleChange}
                       value={formValues.toAcc}
                     >
-                        <option  hidden disabled  value="" selected >--Select From Account--</option>
+                        <option  hidden disabled  value="" selected >--Select To Account--</option>
                       <option value="Personal Account">Personal Account</option>
                       <option value="Real Living">Real Living</option>
                       <option value="My Dream House">My Dream House</option>
@@ -450,7 +451,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                     <div>
                       {formError.amount ? (
                         <label style={{ color: "red" }}>
-                          Amount is {formError.amount}
+                         {formError.amount}
                         </label>
                       ) : (
                         ""
@@ -546,7 +547,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                     <div>
                       {formError.notes ? (
                         <label style={{ color: "red" }}>
-                          Notes is {formError.notes}
+                           {formError.notes}
                         </label>
                       ) : (
                         ""
