@@ -64,24 +64,34 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
           ...sendError,
           checkaccounts: "From account and to account can not be same",
         };
+
+        sendError = {
+          ...sendError,
+          [key]: "",
+        };
       } else {
         sendError = { ...sendError, [key]: "", checkaccounts: "" };
       }
       // e.preventDefault();
     });
     setFormErrors(sendError);
-    //validation changes end
-    //  setFormErrors(validate(formValues));
+   
     setIsSubmit(true);
   }
-  console.log(isSubmit, "submitttt");
+  
   const { id } = useParams();
   useEffect(() => {
     console.log(isSubmit, "use-effect");
+    console.log(Object.values(formError))
     const errorlength = Object.values(formError).filter(
       (items) => items !== ""
     );
+
     console.log("error length", errorlength.length);
+    if(errorlength.length !==0)
+    {
+      setIsSubmit(false)
+    }
     if (errorlength.length === 0 && isSubmit) {
       const login = JSON.parse(localStorage.getItem("login"));
       const items = login[0].email;
@@ -111,7 +121,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
       navigate("/showTable");
     }
     //eslint-disable-next-line
-  }, [isSubmit]);
+  },[isSubmit]);
 
   const handelRemoveImage = () => {
     setFormValues({ ...formValues, filename: "" });
@@ -251,6 +261,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
 
   return (
     <div className="App">
+      {/* {console.table(formValues)} */}
       <div className="container">
         <h1>Finance Tracker</h1>
         <form onSubmit={submitHandle} className="form-control">
@@ -294,7 +305,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       onChange={handleChange}
                       value={formValues.month}
                     >
-                      <option value="0">--Select Month--</option>
+                      <option value="">--Select Month--</option>
                       <option value={`Janaury ${year}`}>Janaury {year}</option>
                       <option value={`February ${year}`}>
                         February {year}
@@ -338,7 +349,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       onChange={handleChange}
                       value={formValues.transType}
                     >
-                      <option value="">--Select Transaction-</option>
+                     <option  hidden disabled  value="" selected >--Select From Account--</option>
                       <option value="Home">Home</option>
                       <option value="Personal Expense">Personal Expense</option>
                       <option value="Income">Income</option>
@@ -365,7 +376,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       onChange={handleChange}
                       value={formValues.frmAcc}
                     >
-                      <option value="">--Select From Account--</option>
+                      <option  hidden disabled  value="" selected >--Select From Account--</option>
                       <option value="Personal Account">Personal Account</option>
                       <option value="Real Living">Real Living</option>
                       <option value="My Dream House">My Dream House</option>
@@ -395,7 +406,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       onChange={handleChange}
                       value={formValues.toAcc}
                     >
-                      <option value="">--Select To Account--</option>
+                        <option  hidden disabled  value="" selected >--Select From Account--</option>
                       <option value="Personal Account">Personal Account</option>
                       <option value="Real Living">Real Living</option>
                       <option value="My Dream House">My Dream House</option>

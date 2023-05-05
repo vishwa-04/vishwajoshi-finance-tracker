@@ -16,7 +16,7 @@ function Login() {
     setFormErrors(validate(formValues));
     setIsSubmit(true);
   }
-
+console.log(isSubmit,"after submit");
   function handleChange(e) {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
@@ -45,19 +45,22 @@ function Login() {
           localStorage.setItem("login", JSON.stringify([formValues]));
           console.log("Login Successfull");
           navigate("/showTable");
+          break;
         } else if (
           register[e].email !== formValues.email &&
           register[e].password !== formValues.password
         ) {
-          console.log("login fail");
+       
           navigate("/login");
         }
       }
     }
     //eslint-disable-next-line
-  }, [formError]);
+  }, [formError,isSubmit]);
 
   function validate(values) {
+    let flag = 0 ;
+    console.log(values);
     const errors = {};
 
     if (values.email === "") {
@@ -70,15 +73,21 @@ function Login() {
     const register = JSON.parse(localStorage.getItem("register"));
     for (const e in register) {
       if (
-        register[e].email !== formValues.email &&
-        register[e].password !== formValues.password
+        register[e].email === values.email &&
+        register[e].password === values.password
       ) {
-        errors.password = "Wrong email or password";
-      }
+   flag=1;
+        
+  }
+
+    }
+    if(flag===0){
+      errors.password = "Wrong email or password";
     }
     setIsSubmit(false);
     return errors;
   }
+  console.log(isSubmit,"after validate");
   return (
     <>
       <form onSubmit={submitHandle}>
