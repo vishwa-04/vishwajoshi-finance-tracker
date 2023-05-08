@@ -1,4 +1,7 @@
 import { Link, useParams } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import * as yup from 'yup'
+import {yupResolver} from '@hookform/resolvers/yup'
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -33,61 +36,91 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
 
       const navigate = useNavigate();
       const [formValues, setFormValues] = useState(initialValues);
-
-
+      
       const [formError, setFormErrors] = useState({
-    transDate: "",
-    month: "",
-    transType: "",
-    frmAcc: "",
-    toAcc: "",
-    amount: "",
-    filename: "",
-    notes: "",
-    checkaccounts: "",
-  });
+        transDate: "",
+        month: "",
+        transType: "",
+        frmAcc: "",
+        toAcc: "",
+        amount: "",
+        filename: "",
+        notes: "",
+        checkaccounts: "",
+      });
+      
+      const [isSubmit, setIsSubmit] = useState(false);
+      
+      
+      
+      // function submitHandle(e) {
+        //   e.preventDefault();
+        //   //validation changes start
+        //   const validateFormValues = { ...formValues };
+  //   let sendError = { ...formError };
 
-  const [isSubmit, setIsSubmit] = useState(false);
+  //   Object.keys(validateFormValues).map((key, index) => {
+  //     if (validateFormValues[key] === "") {
+  //       sendError = { ...sendError, [key]: "required*" };
+  //     } else if (validateFormValues["frmAcc"] === validateFormValues["toAcc"]) {
+  //       sendError = {
+  //         ...sendError,
+  //         checkaccounts: "From account and to account can not be same",
+  //       };
 
-
-  function submitHandle(e) {
-    e.preventDefault();
-    //validation changes start
-    const validateFormValues = { ...formValues };
-    let sendError = { ...formError };
-
-    Object.keys(validateFormValues).map((key, index) => {
-      if (validateFormValues[key] === "") {
-        sendError = { ...sendError, [key]: "required*" };
-      } else if (validateFormValues["frmAcc"] === validateFormValues["toAcc"]) {
-        sendError = {
-          ...sendError,
-          checkaccounts: "From account and to account can not be same",
-        };
-
-        sendError = {
-          ...sendError,
-          [key]: "",
-        };
-      } else {
-        sendError = { ...sendError, [key]: "", checkaccounts: "" };
-      }
-      // e.preventDefault();
-    });
-    setFormErrors(sendError);
+  //       sendError = {
+  //         ...sendError,
+  //         [key]: "",
+  //       };
+  //     } else {
+  //       sendError = { ...sendError, [key]: "", checkaccounts: "" };
+  //     }
+  //     // e.preventDefault();
+  //   });
+  //   setFormErrors(sendError);
    
-    setIsSubmit(true);
+  //   setIsSubmit(true);
+  // }
+  
+  const validationSchema = yup.object().shape({
+    transDate: yup.string().required("Date is a required field"),
+
+    month: yup.string().required("Month is a required field"),
+
+    transType: yup.string().required("Transaction Type is a required field"),
+
+    frmAcc: yup.string().notOneOf([yup.ref("toAcc"),null],"From and to account cannot be same")
+    .required("From Account is a required field"),
+
+    toAcc: yup.string().notOneOf([yup.ref("frmAcc"),null],"From and to account cannot be same")
+    .required("To Account is a required field"),
+
+    amount:yup.number().required().typeError("Amount is required").min(1,'Amount should be greater than 0'),
+
+    filename: yup.mixed().required('hello'),
+
+    notes: yup.string().required()
+    .max(250,"Notes cannot be greater than 250 characters"),
+  })
+  const { register , handleSubmit , formState:{ errors },getValues} = useForm({
+    resolver:yupResolver(validationSchema),
+
+ 
+  });
+  const onSubmit = (data) => {
+    console.log(data,"yup")
+    console.log(getValues());
   }
   
   const { id } = useParams();
   useEffect(() => {
-    console.log(isSubmit, "use-effect");
-    console.log(Object.values(formError))
+    // console.log(isSubmit, "use-effect");
+    // console.log(Object.values(formError))
     const errorlength = Object.values(formError).filter(
       (items) => items !== ""
     );
 
-    console.log("error length", errorlength.length);
+    // console.log("error length", errorlength.length);
     if(errorlength.length !==0)
     {
       setIsSubmit(false)
@@ -264,7 +297,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
       {/* {console.table(formValues)} */}
       <div className="container">
         <h1>Finance Tracker</h1>
-        <form onSubmit={submitHandle} className="form-control">
+        <form onSubmit={handleSubmit(onSubmit)} className="form-control">
           <div className="container">
             <table>
               <tbody>
@@ -276,20 +309,14 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                     <input
                       type="date"
                       name="transDate"
-                      value={formValues.transDate}
+                      // value={formValues.transDate}
                       onChange={handleChange}
-                 
+                      {...register("transDate")}
                     ></input>
                     <tr>
                       <td>
-                        <div>
-                          {formError.transDate ? (
-                            <label style={{ color: "red" }}>
-                              Date is {formError.transDate}
-                            </label>
-                          ) : (
-                            ""
-                          )}
+                        <div className="errors">
+                          {errors.transDate?.message}
                         </div>
                       </td>
                     </tr>
@@ -304,7 +331,8 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       id="getmonth"
                       name="month"
                       onChange={handleChange}
-                      value={formValues.month}
+                      // value={formValues.month}
+                      {...register("month")}
                     >
                       <option value="">--Select Month--</option>
                       <option value={`Janaury ${year}`}>Janaury {year}</option>
@@ -328,14 +356,8 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                         December {year}
                       </option>
                     </select>
-                    <div>
-                      {formError.month ? (
-                        <label style={{ color: "red" }}>
-                          Month is {formError.month}
-                        </label>
-                      ) : (
-                        ""
-                      )}
+                    <div className="errors">
+                    {errors.month?.message}
                     </div>
                   </td>
                 </tr>
@@ -348,21 +370,16 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       id="transactionType"
                       name="transType"
                       onChange={handleChange}
-                      value={formValues.transType}
+                      // value={formValues.transType}
+                      {...register("transType")}
                     >
                      <option  hidden disabled  value="" selected >--Select Transaction Type--</option>
                       <option value="Home">Home</option>
                       <option value="Personal Expense">Personal Expense</option>
                       <option value="Income">Income</option>
                     </select>
-                    <div>
-                      {formError.transType ? (
-                        <label style={{ color: "red" }}>
-                          Transaction Type is {formError.transType}
-                        </label>
-                      ) : (
-                        ""
-                      )}
+                    <div className="errors">
+                    {errors.transType?.message}
                     </div>
                   </td>
                 </tr>
@@ -375,7 +392,8 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       id="frmAcc"
                       name="frmAcc"
                       onChange={handleChange}
-                      value={formValues.frmAcc}
+                      // value={formValues.frmAcc}
+                      {...register("frmAcc")}
                     >
                       <option  hidden disabled  value="" selected >--Select From Account--</option>
                       <option value="Personal Account">Personal Account</option>
@@ -385,14 +403,8 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       <option value="Core Realtors">Core Realtors</option>
                       <option value="Big Block">Big Block</option>
                     </select>
-                    <div>
-                      {formError.frmAcc ? (
-                        <label style={{ color: "red" }}>
-                          From Account is {formError.frmAcc}
-                        </label>
-                      ) : (
-                        ""
-                      )}
+                    <div className="errors">
+                    {errors.frmAcc?.message}
                     </div>
                   </td>
                 </tr>
@@ -405,7 +417,8 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       id="toAcc"
                       name="toAcc"
                       onChange={handleChange}
-                      value={formValues.toAcc}
+                      // value={formValues.toAcc}
+                      {...register("toAcc")}
                     >
                         <option  hidden disabled  value="" selected >--Select To Account--</option>
                       <option value="Personal Account">Personal Account</option>
@@ -415,25 +428,11 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       <option value="Core Realtors">Core Realtors</option>
                       <option value="Big Block">Big Block</option>
                     </select>
-                    <div>
-                      {formError.toAcc ? (
-                        <label style={{ color: "red" }}>
-                          To Account is {formError.toAcc}
-                        </label>
-                      ) : (
-                        ""
-                      )}
+                    <div className="errors">
+                    
+                    {errors.toAcc?.message}
                     </div>
 
-                    {formError.checkaccounts ? (
-                      <div className="sameAccountError">
-                        <label style={{ color: "red" }}>
-                          {formError.checkaccounts}
-                        </label>
-                      </div>
-                    ) : (
-                      ""
-                    )}
                   </td>
                 </tr>
 
@@ -445,17 +444,12 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                     <input
                       type="number"
                       name="amount"
-                      value={formValues.amount}
+                      // value={formValues.amount}
                       onChange={handleChange}
+                      {...register("amount")}
                     ></input>
-                    <div>
-                      {formError.amount ? (
-                        <label style={{ color: "red" }}>
-                         {formError.amount}
-                        </label>
-                      ) : (
-                        ""
-                      )}
+                    <div className="errors">
+                    {errors.amount?.message}
                     </div>
                   </td>
                 </tr>
@@ -474,8 +468,9 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                         />
                         <input
                           type="button"
-                          value="remove"
+                          // value="remove"
                           onClick={() => handelRemoveImage()}
+                          
                         />
                       </>
                     ) : (
@@ -483,54 +478,15 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                         type="file"
                         id="myFile"
                         onChange={handleChange}
-                        value={formValues.filename}
+                        // value={formValues.filename}
+                        {...register("filename")}
                       />
                     )}
                   </td>
-                  <div>
-                    {formError.filename ? (
-                      <label style={{ color: "red" }}>
-                        Filename is {formError.filename}
-                      </label>
-                    ) : (
-                      ""
-                    )}
+                  <div className="errors">
+                  {errors.filename?.message}
                   </div>
-                  <td>
-                    {/* {removeImage ? (
-                  <>
-                    <input
-                      type="file"
-                      name="Receipt"
-                      value={formValues.filename}
-                      onChange={(e) => {
-                        handleChange(e.target.files);
-
-                      }}
-                    />
-                    <span>{formError.filename}</span>
-                  </>
-                ) : (
-                  <>
-                    <img
-                      style={{ width: "200px" }}
-                      src={formValues.filename}
-                      alt="..."
-                    />
-
-                    <input
-                      type="button"
-                      value="remove"
-                      onClick={() => handelRemoveImage()}
-                    />
-                  </>
-                )} */}
-                  </td>
-                  <tr>
-                    <td>
-                      {/* <img src={formValues.filename} alt="alt"></img> */}
-                    </td>
-                  </tr>
+                
                 </tr>
                 <tr>
                   <td>
@@ -541,17 +497,12 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
                       rows="5"
                       cols="20"
                       name="notes"
-                      value={formValues.notes}
+                      // value={formValues.notes}
                       onChange={handleChange}
+                      {...register("notes")}
                     ></textarea>
-                    <div>
-                      {formError.notes ? (
-                        <label style={{ color: "red" }}>
-                           {formError.notes}
-                        </label>
-                      ) : (
-                        ""
-                      )}
+                    <div className="errors">
+                    {errors.notes?.message}
                     </div>
                   </td>
                 </tr>
