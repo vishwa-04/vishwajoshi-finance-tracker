@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useTransContext } from "../Contexts/formValuesContext";
 import "./css/style.css";
 
 function FinanceTracker({ updateFormValue, isUpdate, index }) {
@@ -36,6 +37,9 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
   const [formValues, setFormValues] = useState(initialValues);
   const [isSubmit, setIsSubmit] = useState(false);
 
+  const {TransactionData, setTransactionData} = useTransContext()
+  console.log(TransactionData,"this is context of create form")
+
   const validationSchema = yup.object().shape({
     transDate: yup.string().required("Date is a required field"),
 
@@ -61,6 +65,13 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
 
     filename: yup.mixed().test("required", "Please select a file", (value) => {
       return value && value.length;
+    }).test('size','File is too big',(value)=>{
+      if(typeof(value) === 'string'){
+        return true;
+      }
+      else{
+        return value[0].size <= 1024 * 1024 * 1
+      }
     }),
 
     notes: yup
@@ -104,9 +115,11 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
    
     if (isSubmit) {
       const login = JSON.parse(localStorage.getItem("login"));
-      const items = login[0].email;
-      if (localStorage.getItem(items) !== null) {
-        const data = JSON.parse(localStorage.getItem(items));
+      let data = TransactionData
+      console.log(data,"this is data");
+      if (data !== null) {
+        
+        // const data = JSON.parse(localStorage.getItem(items));
 
         if (id) {
           for (const e in data) {
@@ -121,11 +134,13 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
           formValues["id"] = previousId + 1;
           data.push(formValues);
         }
-
-        localStorage.setItem(items, JSON.stringify(data));
+        setTransactionData(data)
+        // localStorage.setItem(items, JSON.stringify(data));
       } else {
         formValues["id"] = 1;
-        localStorage.setItem(items, JSON.stringify([formValues]));
+        setTransactionData([formValues])
+        console.log("this is form values",formValues);
+        // localStorage.setItem(items, JSON.stringify([formValues]));
       }
       navigate("/showTable");
     }

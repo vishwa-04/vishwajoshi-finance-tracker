@@ -18,6 +18,7 @@ import UpdateTransaction from './pages/Component/update';
 import Registration from './pages/Component/registration';
 import FinanceTracker from './pages/user';
 import Error from './pages/Component/Error';
+import { FormValuesContext } from './pages/Contexts/formValuesContext';
 
 
 
@@ -57,36 +58,11 @@ const router = createBrowserRouter(
   )
 );
 
-// const router = createBrowserRouter([
-//   {
-//     path: "/",
-//     element: <FinanceTracker />,
-//   },
-//   {
-//     path: "/showTable",
-//     element:<ShowTable/>
-//   },
-//   {
-//     path: `showTable/:id`,
-//     element:<ViewTransaction/>
-//   },
-//   {
-//     path: `/update/:id`,
-//     element:<UpdateTransaction/>
-//   },
-//   {
-//     path: `/login`,
-//     element:<Login/>
-//   },
-//   {
-//     path: `/registration`,
-//     element:<Registration/>
-//   },
-  
-// ]);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+<FormValuesContext>
   <RouterProvider router={router} />
+</FormValuesContext>
 );
 reportWebVitals();

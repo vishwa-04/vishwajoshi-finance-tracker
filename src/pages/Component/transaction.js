@@ -1,12 +1,15 @@
 import { useParams } from "react-router-dom";
 import "../user/showTable.css";
+import { useTransContext } from "../Contexts/formValuesContext";
 
 const ViewTransaction = () => {
+  const {TransactionData,setTransactionData}=useTransContext()
+
   const { id } = useParams();
   console.log(id,"iddd");
   const login = JSON.parse(localStorage.getItem("login"));
-  const items = login[0].email;
-  const getData = JSON.parse(localStorage.getItem(items));
+  // const items = login[0].email;
+  const getData = TransactionData
   const [transaction] = getData.filter(ele=>ele.id==id);
   // console.log(data,"data");
   return (

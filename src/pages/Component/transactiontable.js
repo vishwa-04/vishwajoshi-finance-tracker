@@ -1,11 +1,13 @@
 import { useState ,useEffect, useRef,} from "react";
 import { Link } from "react-router-dom";
 import '../user/css/transactiontable.css'
+import { useTransContext } from "../Contexts/formValuesContext";
+
 
 
 export const Transaction  = (props) =>{
-     
 
+  const {TransactionData,setTransactionData} = useTransContext()
   const sortOrder = useRef("");
   const [lastSortKey, setlastSortKey] = useState(null);
   const [data, setData] = useState(props.getData);
@@ -22,10 +24,6 @@ export const Transaction  = (props) =>{
   };
  
 
-  useEffect(() => {
-    setGetData(props.getData);
-    setData(props.getData);
-  }, [props.getData]);
 
   function requestSort(currentKey, type) {
     setCurrentPage(1);
@@ -152,7 +150,32 @@ else{
 }
 
 }
+
+
+useEffect(() => {
+  
+  setGetData(props.getData)
+}, [props.getData]);
+
+function deleteRecord(id){
+  let filterData = [...getData];
+  console.log(props.getData);
+  const deleteData = filterData.filter((element,index)=>{
+
+    return element.id !== id
+  })
+  let filterContextData = [...TransactionData];
+  console.log(props.getData);
+  const deleteContextData = filterContextData.filter((element,index)=>{
+
+    return element.id !== id
+  })
+  setGetData(deleteData)
+  setTransactionData(deleteContextData);
+}
     
+console.log(getData,"::::170");
+
     return(<>
 
     <div>
@@ -209,6 +232,7 @@ else{
             </th>
             <th>View</th>
             <th>Update</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -244,6 +268,11 @@ else{
                 <td>
                   {" "}
                   <Link  to={`update/${data.id}`}>Update</Link>
+                </td>
+                <td 
+                onClick={()=> deleteRecord(data.id)  }
+                >
+                <i class="fa fa-trash" aria-hidden="true"></i>
                 </td>
               </tr>
             );

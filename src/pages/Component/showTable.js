@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../user/showTable.css";
-
+import { useTransContext } from "../Contexts/formValuesContext";
 import { Transaction } from "./transactiontable";
 
 const months = [
@@ -19,17 +19,15 @@ const months = [
   "December 2023",
 ];
 const ShowTable = () => {
-  const [data, setData] = useState([]);
+  const {TransactionData,setTransactionData} = useTransContext()
+  const [data, setData] = useState(TransactionData);
   const [groupData, setGroupData] = useState([]);
-  const [getData, setgetData] = useState([]);
+  const [getData, setgetData] = useState(TransactionData);
   const navigate = useNavigate();
+
   useEffect(() => {
-    const login = JSON.parse(localStorage.getItem("login"));
-    const items = login && login[0].email;
-    let getData = JSON.parse(localStorage.getItem(items));
-    setgetData(getData);
-    setData(getData);
-  }, []);
+    setgetData(TransactionData)
+  }, [TransactionData]);
 
 
   function handleChange(e) {
@@ -44,13 +42,14 @@ const ShowTable = () => {
       
     });
     setGroupData(storeResult);
+    
   }
   function handleLogout(){
     
     localStorage.removeItem("login");
     navigate('/login')
   }
-
+  
   return (
     <>
     <div>
@@ -81,7 +80,7 @@ const ShowTable = () => {
       
       {/* eslint-disable-next-line */}
     </tr>         
-        <Transaction  getData={getData} months = {months}></Transaction>
+        <Transaction  getData={getData} months = {months} ></Transaction>
 
     {groupData.length !== 0 &&
       Object.keys(groupData).map(
@@ -91,7 +90,7 @@ const ShowTable = () => {
               <h2>{data}</h2>
            
               <>
-              <Transaction getData={groupData[data]} months = {months}></Transaction>
+              <Transaction getData={groupData[data]} months = {months} ></Transaction>
               </>
            
             </>
