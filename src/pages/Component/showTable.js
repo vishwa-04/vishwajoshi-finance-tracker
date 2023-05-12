@@ -19,86 +19,117 @@ const months = [
   "December 2023",
 ];
 const ShowTable = () => {
-  const {TransactionData,setTransactionData} = useTransContext()
+  const { TransactionData, setTransactionData } = useTransContext();
   const [data, setData] = useState(TransactionData);
   const [groupData, setGroupData] = useState([]);
   const [getData, setgetData] = useState(TransactionData);
   const navigate = useNavigate();
 
   useEffect(() => {
-    setgetData(TransactionData)
+    setgetData(TransactionData);
   }, [TransactionData]);
 
+  const [groupValue, setGroupValue] = useState("");
+  const [isGrouped, setIsGrouped] = useState(false);
+
+  useEffect(() => {
+    if (isGrouped === true) {
+      handleChange(groupValue);
+      console.log(isGrouped, "this is group value of useeffect");
+    }
+  }, [getData]);
 
   function handleChange(e) {
     let storeResult = {};
     let array = [...getData];
-    let value = e.target.value;
-    array.forEach((item) => {
-      let result = item[value];
-   
-      storeResult[result] = storeResult[result] ?? [];
-      storeResult[result].push(item);
-      
-    });
-    setGroupData(storeResult);
-    
+    setIsGrouped(true);
+    if (e.target) {
+      let Groupvalue = e.target.value;
+      setGroupValue(Groupvalue);
+      if (Groupvalue !== "") {
+        array.forEach((item) => {
+          let result = item[Groupvalue];
+          storeResult[result] = storeResult[result] ?? [];
+          storeResult[result].push(item);
+        });
+        setGroupData(storeResult);
+      } else {
+        setIsGrouped(false);
+        setGroupData([]);
+      }
+    } else {
+      if (e) {
+        array.forEach((item) => {
+          let result = item[e];
+          storeResult[result] = storeResult[result] ?? [];
+          storeResult[result].push(item);
+        });
+        setGroupData(storeResult);
+      } else {
+        setIsGrouped(false);
+        setGroupData([]);
+      }
+    }
   }
-  function handleLogout(){
-    
+  function handleLogout() {
     localStorage.removeItem("login");
-    navigate('/login')
+    navigate("/login");
   }
-  
+
+  debugger;
+  console.log(getData, "LsxLJX>>>>>>>>");
   return (
     <>
-    <div>
-    
-      <input type="button" onClick={handleLogout} value="Logout"/>
-    </div>
+      <div>
+        <input type="button" onClick={handleLogout} value="Logout" />
+      </div>
 
+      <>
+        {getData ? (
+          <>
+            <tr>
+              <td>
+                <label>Transaction Type</label>
+              </td>
+              <td>
+                <select
+                  id="transactionType"
+                  name="transType"
+                  onChange={handleChange}
+                >
+                  <option value="groupby">--Group By--</option>
+                  <option value="none">None</option>
+                  <option value="month">Month Year</option>
+                  <option value="transType">Transaction Type</option>
+                  <option value="frmAcc">From Account</option>
+                  <option value="toAcc">To Account</option>
+                </select>
+              </td>
 
-    <>
-    
-    { getData ?
-    <>
-    <tr>
-      <td>
-        <label>Transaction Type</label>
-      </td>
-      <td>
-        <select id="transactionType" name="transType" onChange={handleChange}>
-          <option value="groupby">--Group By--</option>
-          <option value="none">None</option>
-          <option value="month">Month Year</option>
-          <option value="transType">Transaction Type</option>
-          <option value="frmAcc">From Account</option>
-          <option value="toAcc">To Account</option>
-        </select>
-   
-      </td>
-      
-      {/* eslint-disable-next-line */}
-    </tr>         
-        <Transaction  getData={getData} months = {months} ></Transaction>
+              {/* eslint-disable-next-line */}
+            </tr>
+            <Transaction getData={getData} months={months}></Transaction>
 
-    {groupData.length !== 0 &&
-      Object.keys(groupData).map(
-        (data) =>
-          data !== "undefined" && (
-            <>
-              <h2>{data}</h2>
-           
-              <>
-              <Transaction getData={groupData[data]} months = {months} ></Transaction>
-              </>
-           
-            </>
-          )
-      )}  
-    </>
-           :<span>No data found</span>  } 
-           
+            {groupData.length !== 0 &&
+              Object.keys(groupData).map(
+                (data) =>
+                  data !== "undefined" && (
+                    <>
+                      <h2>{data}</h2>
+
+                      <>
+                        <Transaction
+                          getData={groupData[data]}
+                          months={months}
+                        ></Transaction>
+                      </>
+                    </>
+                  )
+              )}
+          </>
+        ) : (
+          <span>No data found</span>
+        )}
       </>
 
       <Link to={"create"} className="btn btn-secondary">

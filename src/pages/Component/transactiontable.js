@@ -1,20 +1,18 @@
-import { useState ,useEffect, useRef,} from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import '../user/css/transactiontable.css'
+import "../user/css/transactiontable.css";
 import { useTransContext } from "../Contexts/formValuesContext";
 
-
-
-export const Transaction  = (props) =>{
-
-  const {TransactionData,setTransactionData} = useTransContext()
+export const Transaction = (props) => {
+  const { TransactionData, setTransactionData } = useTransContext();
   const sortOrder = useRef("");
   const [lastSortKey, setlastSortKey] = useState(null);
-  const [data, setData] = useState(props.getData);
   // const [groupData, setGroupData] = useState([]);
   const [getData, setGetData] = useState(props.getData);
 
-
+  useEffect(() => {
+    setGetData(props.getData);
+  }, [props.getData]);
 
   const sorter = (a, b) => {
     return months.indexOf(a.month) - months.indexOf(b.month);
@@ -22,23 +20,16 @@ export const Transaction  = (props) =>{
   const sorterReverse = (a, b) => {
     return months.indexOf(b.month) - months.indexOf(a.month);
   };
- 
-
 
   function requestSort(currentKey, type) {
     setCurrentPage(1);
     if (sortOrder.current === "asc" && lastSortKey === currentKey) {
       sortOrder.current = "desc";
-    }
-    
-    else if (sortOrder.current === "desc" && lastSortKey === currentKey) {
+    } else if (sortOrder.current === "desc" && lastSortKey === currentKey) {
       sortOrder.current = "";
-    } 
-    
-    else {
+    } else {
       sortOrder.current = "asc";
       setlastSortKey(currentKey);
-    
     }
     sortingCondition(currentKey, type);
   }
@@ -53,11 +44,12 @@ export const Transaction  = (props) =>{
       // console.log(sort, sortOrder.current, "sort : sortOrder");
     } else if (sortOrder.current === "desc" && type === undefined) {
       let sort = [...getData].sort((a, b) =>
-      b[currentKey].localeCompare(a[currentKey])
+        b[currentKey].localeCompare(a[currentKey])
       );
       setGetData(sort);
     } else if (sortOrder.current === "" && type === undefined) {
-      let sort = data;
+      let sort = props.getData;
+      // let sort = TransactionData;
       // console.log(sort, sortOrder.current, "sort : sortOrder");
       setGetData(sort);
     }
@@ -78,7 +70,8 @@ export const Transaction  = (props) =>{
       // console.log("parseInt desc");
     }
     if (sortOrder.current === "" && type === "number") {
-      let sort = data;
+      let sort = props.getData;
+      // let sort = TransactionData;
       setGetData(sort);
 
       // console.log("parseInt normal");
@@ -94,14 +87,13 @@ export const Transaction  = (props) =>{
 
       // console.log(sort, "sort desc");
     } else if (sortOrder.current === "" && type === "month") {
-      let sort = data;
+      let sort = props.getData;
+      // let sort = TransactionData;
       setGetData(sort);
 
       // console.log(sort, "sort normal");
     }
   }
-
-
 
   const [currentPage, setCurrentPage] = useState(1);
   let recordsPerPage = 3;
@@ -109,79 +101,64 @@ export const Transaction  = (props) =>{
   let firstIndex = lastIndex - recordsPerPage;
   const totalPages = Math.ceil(getData && getData.length / recordsPerPage);
   const numbers = [...Array(totalPages + 1).keys()].slice(1);
-    const months = props.months;
-    
-  
-    function prePage() {
-        setCurrentPage(currentPage - 1);  
+  const months = props.months;
+
+  function prePage() {
+    setCurrentPage(currentPage - 1);
+  }
+
+  function changeCurrentPage(id) {
+    setCurrentPage(id);
+  }
+
+  function NextPage() {
+    setCurrentPage(currentPage + 1);
+  }
+
+  function filterBySearch(e) {
+    let querySearch = e.target.value;
+    let filterData = [...props.getData];
+    // console.log(filterData,"this is filter data");
+    if (querySearch !== "") {
+      const filterTable = filterData.filter((items) => {
+        return Object.keys(items).some(
+          (data) =>
+            data !== "filename" &&
+            data !== "id" &&
+            String(items[data])
+              .toLowerCase()
+              .includes(querySearch.trim().toLowerCase())
+        );
+      });
+      setGetData(filterTable);
+      console.log(getData);
+    } else {
+      setGetData(props.getData);
     }
-  
+  }
 
-    function changeCurrentPage(id) {
-      setCurrentPage(id);
-    }
+  function deleteRecord(id) {
+    let filterData = [...getData];
+    console.log(props.getData);
+    const deleteData = filterData.filter((element, index) => {
+      return element.id !== id;
+    });
+    let filterContextData = [...TransactionData];
+    console.log(props.getData);
+    const deleteContextData = filterContextData.filter((element, index) => {
+      return element.id !== id;
+    });
+    setGetData(deleteData);
+    setTransactionData(deleteContextData);
+  }
 
-    function NextPage() {
-        setCurrentPage(currentPage + 1);
-    }
+  // console.log(getData, "::::170");
 
-
-
-function filterBySearch(e){
-  let querySearch = e.target.value
-  let filterData = props.getData;
-  // console.log(filterData,"this is filter data");
-  if(querySearch !== ""){
-  const filterTable = filterData.filter( (items) => { 
-    return  Object.keys(items).some(
-            data =>
-            (data!=='filename' && data!=='id')&&
-              String(items[data]).toLowerCase().includes(querySearch.trim().toLowerCase())
-            )
-        }
-  );
-    setGetData(filterTable)
-    console.log(getData);
-
-}
-else{
-  setGetData(props.getData)
- 
-}
-
-}
-
-
-useEffect(() => {
-  
-  setGetData(props.getData)
-}, [props.getData]);
-
-function deleteRecord(id){
-  let filterData = [...getData];
-  console.log(props.getData);
-  const deleteData = filterData.filter((element,index)=>{
-
-    return element.id !== id
-  })
-  let filterContextData = [...TransactionData];
-  console.log(props.getData);
-  const deleteContextData = filterContextData.filter((element,index)=>{
-
-    return element.id !== id
-  })
-  setGetData(deleteData)
-  setTransactionData(deleteContextData);
-}
-    
-console.log(getData,"::::170");
-
-    return(<>
-
-    <div>
-      
-    <input type="text" placeholder="Search.." onInput={filterBySearch}/>
-    </div>
+  return (
+    <>
+      <div>
+        <input type="text" placeholder="Search.." onInput={filterBySearch} />
+      </div>
       <table className="table table-secondary">
         <thead>
           <tr>
@@ -237,47 +214,48 @@ console.log(getData,"::::170");
         </thead>
         <tbody>
           <>
-          { getData ? getData.slice(firstIndex, lastIndex).map((data, index) => {
-            return (
-              <tr key={index}>
-                <td>{data.transDate}</td>
-                <td>{data.month}</td>
-                <td>{data.transType}</td>
-                <td>{data.frmAcc}</td>
-                <td>{data.toAcc}</td>
-                <td>
-                  {Intl.NumberFormat("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                    minimumFractionDigits: 0,
-                  }).format(data.amount)}
-                </td>
-                <td>
-                  <img
-                    src={data.filename}
-                    alt="img"
-                    height="50px"
-                    width="50px"
-                  ></img>
-                </td>
-                <td>{data.notes}</td>
-                <td>
-                  {" "}
-                  <Link  to={`${data.id}`}>View</Link>
-                </td>
-                <td>
-                  {" "}
-                  <Link  to={`update/${data.id}`}>Update</Link>
-                </td>
-                <td 
-                onClick={()=> deleteRecord(data.id)  }
-                >
-                <i class="fa fa-trash" aria-hidden="true"></i>
-                </td>
-              </tr>
-            );
-          }):<h1>No Data Found</h1>
-        }
+            {getData ? (
+              getData.slice(firstIndex, lastIndex).map((data, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{data.transDate}</td>
+                    <td>{data.month}</td>
+                    <td>{data.transType}</td>
+                    <td>{data.frmAcc}</td>
+                    <td>{data.toAcc}</td>
+                    <td>
+                      {Intl.NumberFormat("en-IN", {
+                        style: "currency",
+                        currency: "INR",
+                        minimumFractionDigits: 0,
+                      }).format(data.amount)}
+                    </td>
+                    <td>
+                      <img
+                        src={data.filename}
+                        alt="img"
+                        height="50px"
+                        width="50px"
+                      ></img>
+                    </td>
+                    <td>{data.notes}</td>
+                    <td>
+                      {" "}
+                      <Link to={`${data.id}`}>View</Link>
+                    </td>
+                    <td>
+                      {" "}
+                      <Link to={`update/${data.id}`}>Update</Link>
+                    </td>
+                    <td onClick={() => deleteRecord(data.id)}>
+                      <i class="fa fa-trash" aria-hidden="true"></i>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <h1>No Data Found</h1>
+            )}
           </>
         </tbody>
       </table>
@@ -285,7 +263,7 @@ console.log(getData,"::::170");
         <ul className="pagination">
           <li className="page-item">
             <span
-            className={`page-link ${currentPage === 1 ? "disable":""}`}
+              className={`page-link ${currentPage === 1 ? "disable" : ""}`}
               onClick={prePage}
               style={{ cursor: "pointer" }}
             >
@@ -309,16 +287,17 @@ console.log(getData,"::::170");
           {/* {console.log(currentPage,totalPages,"curr")} */}
           <li className="page-item">
             <span
-            
-              className={`page-link ${currentPage === totalPages ? "disable":""}`}
+              className={`page-link ${
+                currentPage === totalPages ? "disable" : ""
+              }`}
               onClick={NextPage}
               style={{ cursor: "pointer" }}
             >
-
               Next
             </span>
           </li>
         </ul>
       </nav>
-    </>)
-}
+    </>
+  );
+};

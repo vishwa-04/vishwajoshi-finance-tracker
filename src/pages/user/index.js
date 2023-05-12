@@ -37,8 +37,8 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
   const [formValues, setFormValues] = useState(initialValues);
   const [isSubmit, setIsSubmit] = useState(false);
 
-  const {TransactionData, setTransactionData} = useTransContext()
-  console.log(TransactionData,"this is context of create form")
+  const { TransactionData, setTransactionData } = useTransContext();
+  console.log(TransactionData, "this is context of create form");
 
   const validationSchema = yup.object().shape({
     transDate: yup.string().required("Date is a required field"),
@@ -63,16 +63,18 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
       .typeError("Amount is required")
       .min(1, "Amount should be greater than 0"),
 
-    filename: yup.mixed().test("required", "Please select a file", (value) => {
-      return value && value.length;
-    }).test('size','File is too big',(value)=>{
-      if(typeof(value) === 'string'){
-        return true;
-      }
-      else{
-        return value[0].size <= 1024 * 1024 * 1
-      }
-    }),
+    filename: yup
+      .mixed()
+      .test("required", "Please select a file", (value) => {
+        return value && value.length;
+      })
+      .test("size", "File is too big", (value) => {
+        if (typeof value === "string") {
+          return true;
+        } else {
+          return value[0].size <= 1024 * 1024 * 1;
+        }
+      }),
 
     notes: yup
       .string()
@@ -108,17 +110,15 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
       }
     }
   };
-  console.log(formValues,"formVAlues")
+  console.log(formValues, "formVAlues");
 
   const { id } = useParams();
   useEffect(() => {
-   
     if (isSubmit) {
       const login = JSON.parse(localStorage.getItem("login"));
-      let data = TransactionData
-      console.log(data,"this is data");
+      let data = TransactionData;
+      console.log(data, "this is data");
       if (data !== null) {
-        
         // const data = JSON.parse(localStorage.getItem(items));
 
         if (id) {
@@ -134,12 +134,12 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
           formValues["id"] = previousId + 1;
           data.push(formValues);
         }
-        setTransactionData(data)
+        setTransactionData(data);
         // localStorage.setItem(items, JSON.stringify(data));
       } else {
         formValues["id"] = 1;
-        setTransactionData([formValues])
-        console.log("this is form values",formValues);
+        setTransactionData([formValues]);
+        console.log("this is form values", formValues);
         // localStorage.setItem(items, JSON.stringify([formValues]));
       }
       navigate("/showTable");
@@ -149,7 +149,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
 
   const handelRemoveImage = () => {
     setFormValues({ ...formValues, filename: "" });
-    setValue("filename","")
+    setValue("filename", "");
   };
 
   const date = new Date();
