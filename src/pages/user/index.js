@@ -38,7 +38,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
   const [isSubmit, setIsSubmit] = useState(false);
 
   const { TransactionData, setTransactionData } = useTransContext();
-  console.log(TransactionData, "this is context of create form");
+
 
   const validationSchema = yup.object().shape({
     transDate: yup.string().required("Date is a required field"),
@@ -110,14 +110,14 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
       }
     }
   };
-  console.log(formValues, "formVAlues");
+
 
   const { id } = useParams();
   useEffect(() => {
     if (isSubmit) {
       const login = JSON.parse(localStorage.getItem("login"));
       let data = TransactionData;
-      console.log(data, "this is data");
+  
       if (data !== null) {
         // const data = JSON.parse(localStorage.getItem(items));
 
@@ -127,7 +127,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
               formValues["id"] = parseInt(id);
               data[e] = formValues;
             }
-            console.log(e, "this is key");
+    
           }
         } else {
           let previousId = data[data.length - 1].id;
@@ -139,7 +139,7 @@ function FinanceTracker({ updateFormValue, isUpdate, index }) {
       } else {
         formValues["id"] = 1;
         setTransactionData([formValues]);
-        console.log("this is form values", formValues);
+      
         // localStorage.setItem(items, JSON.stringify([formValues]));
       }
       navigate("/showTable");

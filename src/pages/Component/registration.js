@@ -35,7 +35,7 @@ function Registration(){
 
     const { id } = useParams();
     useEffect(() => {
-        console.log(isSubmit,"issubmit");
+       
         if (Object.keys(formError).length === 0 && isSubmit) {
           if (localStorage.getItem("register") !== null) {
             const data = JSON.parse(localStorage.getItem("register"));
@@ -43,10 +43,10 @@ function Registration(){
             if (id) {
               for (const e in data) {
                 if (parseInt(data[e].id) === parseInt(id)) {
-                  // console.log(data[e].id, id, "e:id");
+                
                   formValues['id'] = id;
                   data[e] = formValues;
-                  // console.log(data[e],formValues,"data[e]   :::::::: formvalues");
+                 
                 }
               }
             } else {

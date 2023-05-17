@@ -3,19 +3,19 @@ import "../user/showTable.css";
 import { useTransContext } from "../Contexts/formValuesContext";
 
 const ViewTransaction = () => {
-  const {TransactionData,setTransactionData}=useTransContext()
+  const {TransactionData}=useTransContext()
 
   const { id } = useParams();
-  console.log(id,"iddd");
+ 
   const login = JSON.parse(localStorage.getItem("login"));
   // const items = login[0].email;
   const getData = TransactionData
   const [transaction] = getData.filter(ele=>ele.id==id);
-  // console.log(data,"data");
+ 
   return (
     <>
       {[transaction].map((data, index) => {
-        console.log(transaction[data],"data");
+        
         return (
             <div className="container">
           <div className="card" style={{ width: "18rem" }}>

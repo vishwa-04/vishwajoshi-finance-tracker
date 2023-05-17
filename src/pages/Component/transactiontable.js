@@ -41,7 +41,7 @@ export const Transaction = (props) => {
       );
       setGetData(sort);
 
-      // console.log(sort, sortOrder.current, "sort : sortOrder");
+    
     } else if (sortOrder.current === "desc" && type === undefined) {
       let sort = [...getData].sort((a, b) =>
         b[currentKey].localeCompare(a[currentKey])
@@ -131,7 +131,7 @@ export const Transaction = (props) => {
         );
       });
       setGetData(filterTable);
-      console.log(getData);
+      // console.log(getData);
     } else {
       setGetData(props.getData);
     }
@@ -139,12 +139,12 @@ export const Transaction = (props) => {
 
   function deleteRecord(id) {
     let filterData = [...getData];
-    console.log(props.getData);
+    // console.log(props.getData);
     const deleteData = filterData.filter((element, index) => {
       return element.id !== id;
     });
     let filterContextData = [...TransactionData];
-    console.log(props.getData);
+    // console.log(props.getData);
     const deleteContextData = filterContextData.filter((element, index) => {
       return element.id !== id;
     });

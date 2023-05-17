@@ -5,10 +5,7 @@ import { DefaultJson } from '../../defaultvalue';
 const TransactionContext = createContext({});
 
 
-  //custom hook//
   export const useTransContext = () => useContext(TransactionContext);
-
-
 
 
   export const FormValuesContext = ({children}) => {

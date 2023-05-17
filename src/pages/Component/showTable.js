@@ -35,7 +35,6 @@ const ShowTable = () => {
   useEffect(() => {
     if (isGrouped === true) {
       handleChange(groupValue);
-      console.log(isGrouped, "this is group value of useeffect");
     }
   }, [getData]);
 
@@ -76,8 +75,7 @@ const ShowTable = () => {
     navigate("/login");
   }
 
-  debugger;
-  console.log(getData, "LsxLJX>>>>>>>>");
+
   return (
     <>
       <div>

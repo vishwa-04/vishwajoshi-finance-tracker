@@ -16,7 +16,6 @@ function Login() {
     setFormErrors(validate(formValues));
     setIsSubmit(true);
   }
-console.log(isSubmit,"after submit");
   function handleChange(e) {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
@@ -41,9 +40,7 @@ console.log(isSubmit,"after submit");
             randomstring += characters.substring(rnum, rnum + 1);
           }
           formValues["token"] = randomstring;
-          console.log(formValues, "login values");
           localStorage.setItem("login", JSON.stringify([formValues]));
-          console.log("Login Successfull");
           navigate("/showTable");
           break;
         } else if (
@@ -60,7 +57,6 @@ console.log(isSubmit,"after submit");
 
   function validate(values) {
     let flag = 0 ;
-    console.log(values);
     const errors = {};
 
     if (values.email === "") {
@@ -87,7 +83,6 @@ console.log(isSubmit,"after submit");
     setIsSubmit(false);
     return errors;
   }
-  console.log(isSubmit,"after validate");
   return (
     <>
       <form onSubmit={submitHandle}>
